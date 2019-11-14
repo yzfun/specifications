@@ -1,4 +1,4 @@
-# Cash:web Protocols
+# Cash:web Specifications
 
 ## BIP70 Payment Token Protocol
 
