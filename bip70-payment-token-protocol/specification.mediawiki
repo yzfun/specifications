@@ -43,7 +43,7 @@ At the most general level the protocol can be decomposed into three distinct rou
 
 ==== 1. Initial Request ====
 
-The client requests access to some guarded HTTP resource. The query string of the request MUST NOT include <code>code</code> and the <code>Authorization</code> header MUST NOT be present. If either of these are present the server MUST assume that the client is attempting authorize itself and process the request as described in [[#3. Authorized Request]].
+The client requests access to some guarded HTTP resource. The query string of the request MUST NOT include <code>code</code> and the <code>Authorization</code> header MUST NOT be present. If either of these are present the server MUST assume that the client is attempting authorize itself and process the request as described in [[3. Authorized Request|#3-authorized-request]].
 
 There are no additional restriction placed on the HTTP request.
 
