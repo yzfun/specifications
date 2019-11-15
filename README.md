@@ -4,4 +4,4 @@
 
 A general payment protocol which allows services to restrict access to resources until an appropriate payment is provided.
 
-[Specification](/bip70-payment-token-protocol/SPECIFICATION.md)
+[Specification](/bip70-payment-token-protocol/specification.mediawiki)
