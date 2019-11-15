@@ -13,9 +13,11 @@
   - [Abstract](#abstract)
   - [Motivation](#motivation)
 - [Specification](#specification)
-  - [1. Initial Request](#1-initial-request)
-  - [2. Payment and Token Issuance](#2-payment-and-token-issuance)
-  - [3. Authorized Request](#3-authorized-request)
+  - [Overview](#overview)
+  - [Sequence](#sequence)
+    1. [Initial Request](#1-initial-request)
+    2. [Payment and Token Issuance](#2-payment-and-token-issuance)
+    3. [Authorized Request](#3-authorized-request)
 - [Rationale](#rationale)
   - [BIP 70](#bip-70)
   - [Statelessness](#statelessness)
@@ -46,19 +48,23 @@ It is to be noted that [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-
 
 The protocol's messages are encoded via [Google's Protocol Buffers](https://developers.google.com/protocol-buffers), authenticated using [X.509 certificates](https://tools.ietf.org/html/rfc5280), and communicated over HTTP/HTTPS.
 
+## Overview
+
 At the most general level the protocol can be decomposed into three distinct round-trips:
 
-1. An initial request for a guarded resource, responded to by a [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment request.
-2. A POST containing payment, responded to with a [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment acknowledgement and a token.
-3. A retry of the initial request, this time including the token, responded with the guarded resource.
+1. Client sends initial request for a guarded resource, server responds with a [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment request.
+2. Client sends a POST containing payment, server responds with a [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment acknowledgement and a token.
+3. Client resends the initial request with the token attach, server grants access to the guarded resource.
 
-## 1. Initial Request
+## Sequence
+
+### 1. Initial Request
 
 The client requests access to some guarded HTTP resource. The query string of the request MUST NOT include `code` and the `Authorization` header MUST NOT be present. If either of these are present the server MUST assume that the client is attempting authorize itself and process the request as described in [3. Authorized Request](#3.-authorized-request).
 
 There are no additional restriction placed on the HTTP request.
 
-A successful request MUST be responded to with status code `402` (*Payment Required*) and the `PaymentRequest` message defined in [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki). Details can be found in the *"PaymentDetails/PaymentRequest"* section.
+A successful request MUST be responded to with status code `402` (*Payment Required*) and the `PaymentRequest` message defined in [BIP 70 - PaymentDetails/PaymentRequest](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest).
 
 ```protobuf
 message PaymentDetails {
@@ -80,14 +86,13 @@ message PaymentRequest {
 }
 ```
 
-The server MUST populate `merchant_data` field of the `PaymentDetails` message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a "proof-of-payment" token to the client in order to authenticate metadata uploads. This is highlighted in more detail in subsequent sections.
+The server MUST populate `merchant_data` field of the `PaymentDetails` message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a "proof-of-payment" token to the client in order to authenticate metadata uploads.
 
-
-## 2. Payment and Token Issuance
+### 2. Payment and Token Issuance
 
 The client sends the payment in the body of a POST request to the `payment_url` specified in the `PaymentDetails` and the server responds with a payment acknowledgement message. This is performed in accordance with [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki). 
 
-Note that the `merchant_data` in the clients `Payment` message MUST be equal to the `merchant_data` in the servers `PaymentDetails` and that malicious clients may modify the `merchant_data`, so should be authenticated in some way (for example, signed with a merchant-only key). 
+The `merchant_data` in the clients `Payment` message MUST be equal to the `merchant_data` in the servers `PaymentDetails`. Note here that malicious clients MAY modify the `merchant_data`, and hence it is RECOMMENDED that it is authenticated in some way (for example, signed with a merchant-only key). 
 
 ```protobuf
 message Payment {
@@ -109,11 +114,11 @@ This response MUST have status code `202` and include both:
 * A `Location` header `{resource path}?code={token string}`.
 * A `Authorization` header `POP {token string}`.
 
-It is RECOMMENDED that the `merchant_data` is chosen such that the `resource path` may be derived from it - avoiding session state.
+It is RECOMMENDED that the `merchant_data` is chosen such that the `resource path` is derivable from it - avoiding session state.
 
-## 3. Authorized Request
+### 3. Authorized Request
 
-The client reconstructs the initial request and MUST include either the code provided in the... TODO
+The client reconstructs the initial request and MUST include either the code provided in the ... TODO
 
 It is RECOMMENDED that, if the client aims to PUT or POST a payload to the server, the body SHOULD be included in this final request rather than the initial request to avoid repeated transmission or excess session state.
 
@@ -121,7 +126,7 @@ It is RECOMMENDED that, if the client aims to PUT or POST a payload to the serve
 
 ## BIP 70
 
-The [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment protocol is a widely adopted standard. Extending it in this way allows wallet developers to easily integrate the protocol with minimal work. 
+The [BIP 70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) payment protocol is a widely adopted standard. Extending it in this way allows wallet developers to easily integrate the protocol with minimal work.
 
 ## Statelessness
 
