@@ -75,7 +75,7 @@ The server MUST populate <code>merchant_data</code> field of the <code>PaymentDe
 
 The client sends the payment in the body of a POST request to the <code>payment_url</code> specified in the <code>PaymentDetails</code> and the server responds with a payment acknowledgement message. This is performed in accordance with BIP70. 
 
-The <code>merchant_data</code> in the clients `Payment` message MUST be equal to the <code>merchant_data</code> in the servers <code>PaymentDetails</code>. Note here that malicious clients MAY modify the <code>merchant_data</code>, and hence it is RECOMMENDED that it is authenticated in some way (for example, signed with a merchant-only key). 
+The <code>merchant_data</code> in the clients <code>Payment</code> message MUST be equal to the <code>merchant_data</code> in the servers <code>PaymentDetails</code>. Note here that malicious clients MAY modify the <code>merchant_data</code>, and hence it is RECOMMENDED that it is authenticated in some way (for example, signed with a merchant-only key). 
 
 <pre>
 message Payment {
