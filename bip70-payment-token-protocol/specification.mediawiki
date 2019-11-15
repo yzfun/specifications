@@ -36,7 +36,7 @@ The protocol's messages are encoded via [[https://developers.google.com/protocol
 At the most general level the protocol can be decomposed into three distinct round-trips:
 
 # Client sends initial request for a guarded resource, server responds with a BIP70 payment request.
-# Client sends a POST containing payment, server responds with a BIP70 payment acknowledgement and a token.
+# Client sends a POST containing payment, server responds with a BIP70 payment acknowledgement and a '''''proof-of-payment token'''''.
 # Client resends the initial request with the token attach, server grants access to the guarded resource.
 
 === Sequence ===
@@ -47,7 +47,7 @@ The client requests access to some guarded HTTP resource. The query string of th
 
 There are no additional restriction placed on the HTTP request.
 
-A successful request MUST be responded to with status code <code>402</code> ('''Payment Required''') and the <code>PaymentRequest</code> message defined in the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest|PaymentDetails/PaymentRequest]] section of BIP70.
+A successful request MUST be responded to with status code <code>402</code> (''Payment Required'') and the <code>PaymentRequest</code> message defined in the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest|PaymentDetails/PaymentRequest]] section of BIP70.
 
 <pre>
 message PaymentDetails {
@@ -69,7 +69,7 @@ message PaymentRequest {
 }
 </pre>
 
-The server MUST populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a "proof-of-payment" token to the client in order to authenticate metadata uploads.
+The server MUST populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a '''''proof-of-payment token''''' to the client in order to authenticate metadata uploads.
 
 ==== 2. Payment and Token Issuance ====
 
