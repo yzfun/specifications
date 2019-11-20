@@ -1,5 +1,5 @@
 <pre>
-  Title: BIP70 Payment Token Protocol
+  Title: Proof-of-Payment Tokens
   Author: Shammah Chancellor <email@here.com>
           Harry Barber <harrybarber@protonmail.com>
   Status: Draft
@@ -11,21 +11,23 @@
 
 === Abstract ===
 
-We introduce a general payment protocol which allows services to restrict access to resources until an appropriate payment is provided.
+We introduce a general payment protocol which restrict access to protected resources until an appropriate payment is provided.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]]. 
 
 === Motivation ===
 
-Monetization of goods over the internet often involves the restriction of specific resources via some form of paywall. As a result, much of web design involves architecting complex authorization schemes involving third party payment processors. 
+Monetization of goods over the internet often involves the restriction of specific resources via some form of paywall. As a result, much of web design involves architecting complex authorization schemes involving third party payment processors via some form of subscription-based API Key. 
 
 Bitcoin allows payments across the internet without the need for trusted intermediaries and the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki|BIP70 Payment Protocol]] provides an extra layer of customer assurance during payments.
 
-A standardized protocol for paid authorization to specific resources would provide merchants with a pluggable way to monetize their services.
+[[https://tools.ietf.org/html/rfc6750|Bearer tokens]] provide an authorization framework allowing manage access to protected resources.
+
+A standardized protocol combining the two would provide merchants with a pluggable way to monetize their services.
 
 == Specification ==
 
-The protocol sits ontop of HTTP and makes use of REST API semantics. It extends the BIP70 protocol and, as such, prior knowledge of it is recommended.
+The protocol sits ontop of HTTP and makes use of REST API semantics. It extends the BIP70 protocol and Bearer Tokens and, as such, prior knowledge of them is recommended.
 
 It is to be noted that BIP70 must be suplemented with [[https://github.com/bitcoin/bips/blob/master/bip-0071.mediawiki|BIP71]] and [[https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki|BIP72]], and that both take on a slightly altered form<ref>The headers are as described https://lists.linuxfoundation.org/pipermail/bitcoin-ml/2017-August/000177.html</ref> for Bitcoin Cash. We refer to this this collection of BIPs as BIP70 from hereon after.
 
@@ -35,15 +37,22 @@ The protocol's messages are encoded via [[https://developers.google.com/protocol
 
 At the most general level the protocol can be decomposed into three distinct round-trips:
 
-# Client sends initial request for a guarded resource, server responds with a BIP70 payment request.
-# Client sends a POST containing payment, server responds with a BIP70 payment acknowledgement and a '''''proof-of-payment token'''''.
-# Client resends the initial request with the token attach, server grants access to the guarded resource.
+'''''TODO: Diagram here'''''
+
+# The Client sends authorization request for a protected resource to the resource owner.
+# The resource owner responds with a BIP70 payment request.
+# The client sends a BIP70 payment to the authorization server.
+# The authorization server responds with a BIP70 payment acknowledgement and a '''''Proof-of-Payment token''''' (POP).
+# Client sends request with the POP token attached to the resource server.
+# The resource server processes the request and returns the protected resource.
+
+As with RFC6750, in some cases, a client can directly pay an authorization server to obtain an access token without having to first obtain an payment request from a resource owner.
 
 === Sequence ===
 
-==== 1. Initial Request ====
+==== 1. Authorization Request ====
 
-The client requests access to some guarded HTTP resource. The query string of the request MUST NOT include <code>code</code> and the <code>Authorization</code> header MUST NOT be present. If either of these are present the server MUST assume that the client is attempting authorize itself and process the request as described in [[3. Authorized Request|#3-authorized-request]].
+The client requests access to some protected HTTP resource. The query string of the request MUST NOT include <code>code</code> and the <code>Authorization</code> header MUST NOT be present. If either of these are present the server MUST assume that the client is attempting authorize itself and process the request as described in [[3. Authorized Request|#3-authorized-request]].
 
 There are no additional restriction placed on the HTTP request.
 
@@ -69,7 +78,7 @@ message PaymentRequest {
 }
 </pre>
 
-The server MUST populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a '''''proof-of-payment token''''' to the client in order to authenticate metadata uploads.
+The server MUST populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message, the exact details of this data is left for future specification and are inconsequential to the main flow of the protocol. Post-payment, this data will be signed by the server providing a POP token to the client in order to authenticate metadata uploads.
 
 ==== 2. Payment and Token Issuance ====
 
@@ -86,11 +95,7 @@ message Payment {
 }
 </pre>
 
-In addition to the BIP70 procedure, the server generates a token string using the following process:
-
-# Extract the <code>merchant_data</code> from the <code>Payment</code> message.
-# Perform HMAC SHA256 with a private secret to yield the raw token.
-# Encode the raw token using URL safe base64.
+In addition to the BIP70 procedure, the server generates the POP token. This token is identically a [[https://tools.ietf.org/html/rfc6750|Bearer Token]], except with `Bearer` prefix replaced with `POP`.
 
 This response MUST have status code <code>202</code> and include both:
 
