@@ -66,7 +66,7 @@ Note that BIP70 must be suplemented with [[https://github.com/bitcoin/bips/blob/
 
 === Protocol Flow ===
 
-[[File:diagrams/flow.png|Figure 1. Abstract Protocol Flow]]
+[[File:diagrams/flow.png|frame|Figure 1. Abstract Protocol Flow]]
 
 The abstract protocol flow illustrated in Figure 1 describes the interaction between the four roles and includes the following steps:
 
