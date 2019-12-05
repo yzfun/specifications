@@ -54,13 +54,13 @@ Client
 
 == Overview ==
 
-Any party in possession of a bearer token can use it to get access to the associated resources (without demonstrating possession of a cryptographic key). We superimpose the bearer token protocol onto BIP70 to allow clients to pay for authorization tokens. The typical token roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
+We superimpose a token-style protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to get access to the associated resources (without demonstrating possession of a cryptographic key).
 
-This authentication method is intended primarily for use in server and proxy authentication.
+The typical token roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
 
 The protocol's messages are encoded via [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]], authenticated using [[https://tools.ietf.org/html/rfc5280|X.509 certificates]], and communicated over [[https://tools.ietf.org/html/rfc2616|HTTP/1.1]] using [[[https://tools.ietf.org/html/rfc5246|Transport Layer Security (TLS)]]]. Implementations MUST use TLS to ensure security against various attacks.
 
-This protocol extends both the BIP70 protocol and bearer token protocol, and therefore prior knowledge of them is advised.
+This protocol extends the BIP70 protocol and follows closely the OAuth Authorization Framework, and therefore prior knowledge of them is advised.
 
 Note that BIP70 must be suplemented with [[https://github.com/bitcoin/bips/blob/master/bip-0071.mediawiki|BIP71]] and [[https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki|BIP72]], and that both take on a slightly altered form<ref>The headers are as described https://lists.linuxfoundation.org/pipermail/bitcoin-ml/2017-August/000177.html</ref> for Bitcoin Cash. We refer to this this collection of BIPs as BIP70 from hereon after.
 
@@ -72,8 +72,8 @@ The abstract protocol flow illustrated in Figure 1 describes the interaction bet
 
 # The Client requests authorization from the resource merchant.
 # The resource merchant responds with a BIP70 payment request.
-# The client sends a BIP70 payment fulfilling the payment request to the authorization server.
-# The authorization server verifies the payment then responds with a BIP70 payment acknowledgement and a POP token.
+# The client sends a BIP70 payment fulfilling the payment request to the payment server.
+# The payment server verifies the payment then responds with a BIP70 payment acknowledgement and a POP token.
 # Client sends a request with the POP token attached to the resource server.
 # The resource server processes the request and returns the protected resource.
 
@@ -128,13 +128,13 @@ This response MUST have status code <code>202</code> and include:
 
 Additionally, the response MAY include a <code>Location</code> header containing URI reference, <code>authorized uri reference</code>, to the protected resource, including <code>code={token string}</code> in the query string.
 
-As with RFC6750, in some cases, a client can directly pay an authorization server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
+As with RFC6750, in some cases, a client can directly pay an payment server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
 
 ==== Authorized Request ====
 
 The client sends a request to the resource server for the protected resource.
 
-If the resource is located at the <code>authorized uri reference</code>, given by the authorization server, then the server MUST extract the POP token from the query string. Otherwise the POP token MUST be extracted from the <code>Authorization</code> header.
+If the resource is located at the <code>authorized uri reference</code>, given by the payment server, then the server MUST extract the POP token from the query string. Otherwise the POP token MUST be extracted from the <code>Authorization</code> header.
 
 If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. How failed requests are responded to are contigent on the token scheme and hence are left for future specification.
 
