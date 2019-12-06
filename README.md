@@ -5,3 +5,5 @@
 The Proof-of-Payment (POP) token authorization framework enables a third-party application to obtain limited access to an HTTP resource via Bitcoin Cash payment.
 
 [Specification](/proof-of-payment-token/specification.mediawiki)
+
+[Protobuf Schema](https://github.com/cashweb/pop-proto)
