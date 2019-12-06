@@ -11,7 +11,7 @@
 
 === Abstract ===
 
-The Proof-of-Payment (POP) token authorization framework enables a third-party application to obtain limited access to an HTTP resource via Bitcoin Cash payment.
+The Proof-of-Payment (POP) token authorization framework enables a third-party application to obtain access to an HTTP resource via Bitcoin Cash payment.
 
 === Notational Conventions ===
 
@@ -74,12 +74,12 @@ The abstract protocol flow illustrated in Figure 1 describes the interaction bet
 # The resource merchant responds with a BIP70 payment request.
 # The client sends a BIP70 payment fulfilling the payment request to the payment server.
 # The payment server verifies the payment then responds with a BIP70 payment acknowledgement and a POP token.
-# Client sends a request with the POP token attached to the resource server.
-# The resource server processes the request and returns the protected resource.
+# Client sends a request, with the POP token attached, to the resource server.
+# The resource server validates the token, processes the request and then returns the protected resource.
 
 ==== Authorization Request & Payment Request ====
 
-The client requests authorization from the resource merchant. The conditions under which the resource merchant responds are left unspecified.
+The client requests authorization from the resource merchant. The conditions under which the resource merchant responds are left for future specification.
 
 If the merchant chooses to serve the request, the response MUST have status code <code>402</code> (''Payment Required'') and the <code>PaymentRequest</code> message defined in the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest|PaymentDetails/PaymentRequest]] section of BIP70.
 
