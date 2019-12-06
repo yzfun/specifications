@@ -1,6 +1,8 @@
+<h2>
 <p align="center">
-<h1> Proof-of-Payment Token Authorization Framework </h1>
+ Proof-of-Payment Token Authorization Framework
 </p>
+</h2>
 
 <p align="center">
 The Proof-of-Payment (POP) token authorization framework enables a third-party application to obtain limited access to an HTTP resource via Bitcoin Cash payment.
