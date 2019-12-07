@@ -54,7 +54,7 @@ Client
 
 == Overview ==
 
-We superimpose a token-style protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to get access to the associated resources (without demonstrating possession of a cryptographic key).
+We superimpose a token-style protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to gain access to the associated resources (without demonstrating possession of a cryptographic key).
 
 The typical token roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
 
@@ -128,7 +128,7 @@ This response MUST have status code <code>202</code> and include:
 
 Additionally, the response MAY include a <code>Location</code> header containing URI reference, <code>authorized uri reference</code>, to the protected resource, including <code>code={token string}</code> in the query string.
 
-As with RFC6750, in some cases, a client can directly pay an payment server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
+As with RFC6750, in some cases, a client can directly pay a payment server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
 
 ==== Authorized Request ====
 
@@ -146,7 +146,7 @@ The BIP70 payment protocol is a widely adopted standard. Extending it allows wal
 
 === Statelessness ===
 
-Stateless protocols provide a miriad of benefits including scalability, availability, and speed. Consequently, the protocol has been designed with statelessness in mind. If the token scheme and merchant data is specified correctly no session state is required server side.
+Stateless protocols provide a myriad of benefits including scalability, availability, and speed. Consequently, the protocol has been designed with statelessness in mind. If the token scheme and merchant data is specified correctly no session state is required server side.
 
 == Footnotes ==
 
