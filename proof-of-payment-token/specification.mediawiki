@@ -35,22 +35,20 @@ A standardized protocol combining authorization tokens with BIP70 would provide 
 
 === Terminology ===
 
-<pre>
-Proof-of-Payment (POP) Token
-  An authorization token with the property that any party in possession of the token (a "bearer") can use the token in any way that any other party in possession of it can. Using a POP token does not require a bearer to prove possession of cryptographic key material (proof-of-possession).
+;Proof-of-Payment (POP) Token
+: An authorization token with the property that any party in possession of the token (a "bearer") can use the token in any way that any other party in possession of it can. Using a POP token does not require a bearer to prove possession of cryptographic key material (proof-of-possession).
 
-Resource Merchant
-  An entity capable of requesting payment for a protected resource. 
+;Resource Merchant
+: An entity capable of requesting payment for a protected resource. 
 
-Resource Server
-  The server hosting the protected resources, capable of accepting and responding to protected resource requests using POP tokens.
+;Resource Server
+: The server hosting the protected resources, capable of accepting and responding to protected resource requests using POP tokens.
 
-Payment Server
-  The server issuing POP tokens to the client after successfully authenticating the resource merchant, verifying payment, and obtaining authorization.
+;Payment Server
+: The server issuing POP tokens to the client after successfully authenticating the resource merchant, verifying payment, and obtaining authorization.
 
-Client
-  An application making protected resource requests on behalf of the resource merchant and with its authorization. The term "client" does not imply any particular implementation characteristics (e.g., whether the application executes on a server, a desktop, or other devices).
-</pre>
+;Client
+: An application making protected resource requests on behalf of the resource merchant and with its authorization. The term "client" does not imply any particular implementation characteristics (e.g., whether the application executes on a server, a desktop, or other devices).
 
 == Overview ==
 
