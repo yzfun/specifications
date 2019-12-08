@@ -122,11 +122,10 @@ The <code>merchant_data</code> in the <code>Payment</code> message MUST be equal
 
 In addition to the BIP70 procedure, the server generates the POP token. The details of this token are left for future specification. The resource server MUST be able to authenticate access to the protected resource using this token.
 
-This response MUST have status code <code>202</code> and include:
+This response MUST have status code <code>202</code> and include either:
 
 * A <code>Authorization</code> header <code>POP {token string}</code>.
-
-Additionally, the response MAY include a <code>Location</code> header containing URI reference, <code>authorized uri reference</code>, to the protected resource, including <code>code={token string}</code> in the query string.
+* A <code>Location</code> header containing URI reference to the protected resource, which MAY include <code>code={token string}</code> in the query string.
 
 As with RFC6750, in some cases, a client can directly pay a payment server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
 
@@ -134,9 +133,9 @@ As with RFC6750, in some cases, a client can directly pay a payment server to ob
 
 The client sends a request to the resource server for the protected resource.
 
-If the resource is located at the <code>authorized uri reference</code>, given by the payment server, then the server MUST extract the POP token from the query string. Otherwise the POP token MUST be extracted from the <code>Authorization</code> header.
+The server MUST extract the POP token from the requests query string or <code>Authorization</code> header.
 
-If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. How failed requests are responded to are contigent on the token scheme and hence are left for future specification.
+If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. How failed requests are responded is left for future specification as it is specific to the token scheme.
 
 == Rationale ==
 
