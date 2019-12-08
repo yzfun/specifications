@@ -50,7 +50,7 @@ A standardized protocol combining authorization tokens with BIP70 would provide 
 ;Client
 : An application making protected resource requests on behalf of the resource merchant and with its authorization. The term "client" does not imply any particular implementation characteristics (e.g., whether the application executes on a server, a desktop, or other devices).
 
-== Overview ==
+== Specification ==
 
 We superimpose a token-style protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to gain access to the associated resources (without demonstrating possession of a cryptographic key).
 
