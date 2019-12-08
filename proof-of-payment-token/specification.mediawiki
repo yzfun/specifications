@@ -122,7 +122,7 @@ The <code>merchant_data</code> in the <code>Payment</code> message MUST be equal
 
 In addition to the BIP70 procedure, the server generates the POP token. The details of this token are left for future specification. The resource server MUST be able to authenticate access to the protected resource using this token.
 
-This response MUST have status code <code>202</code> and include either:
+This response MUST have status code <code>202</code> and include either or both of the following:
 
 * A <code>Authorization</code> header <code>POP {token string}</code>.
 * A <code>Location</code> header containing URI reference to the protected resource, which MAY include <code>code={token string}</code> in the query string.
@@ -135,7 +135,7 @@ The client sends a request to the resource server for the protected resource.
 
 The server MUST extract the POP token from the requests query string or <code>Authorization</code> header.
 
-If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. How failed requests are responded is left for future specification as it is specific to the token scheme.
+If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. Failure responses are left for future specification as they are specific to the token scheme.
 
 == Rationale ==
 
