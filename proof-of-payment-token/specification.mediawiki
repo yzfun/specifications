@@ -77,7 +77,7 @@ The abstract protocol flow illustrated in Figure 1 describes the interaction bet
 
 ==== Authorization Request & Payment Request ====
 
-The client requests authorization from the resource merchant. The conditions under which the resource merchant responds are left for future specification.
+The client requests authorization from the resource merchant. The resource merchant MAY choose to reject the request. Under what conditions and how the resource merchant decides to reject requests are outside the scope of this specification.
 
 If the merchant chooses to serve the request, the response MUST have status code <code>402</code> (''Payment Required'') and the <code>PaymentRequest</code> message defined in the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest|PaymentDetails/PaymentRequest]] section of BIP70.
 
@@ -101,7 +101,7 @@ message PaymentRequest {
 }
 </pre>
 
-The server MUST populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message, the details of this data is left for future specification and are inconsequential to the main flow of the protocol. The authentication server SHOULD be able to interpret this data and use it to construct the POP token.
+The server SHOULD populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message. The authentication server SHOULD be able to interpret this data and use it to construct a POP token. The details of this data are inconsequential to the main flow of the protocol and is left for future specification.
 
 ==== Payment & Token Issuance ====
 
@@ -118,7 +118,7 @@ message Payment {
 
 The <code>merchant_data</code> in the <code>Payment</code> message MUST be equal to the <code>merchant_data</code> in the servers <code>PaymentDetails</code>. Note that a malicious client MAY modify the <code>merchant_data</code>, and hence it is RECOMMENDED that it is authenticated in some way (for example, signed with a merchant-only key). 
 
-In addition to the BIP70 procedure, the server generates the POP token. The details of this token are left for future specification. The resource server MUST be able to authenticate access to the protected resource using this token.
+In addition to the BIP70 procedure, the server generates the POP token. The resource server SHOULD be able to authenticate access to the protected resource using this token.
 
 This response MUST have status code <code>202</code> and include either or both of the following:
 
@@ -131,9 +131,9 @@ As with RFC6750, in some cases, a client can directly pay a payment server to ob
 
 The client sends a request to the resource server for the protected resource.
 
-The server MUST extract the POP token from the requests query string or <code>Authorization</code> header.
+The server SHOULD extract the POP token from the requests query string or <code>Authorization</code> header.
 
-If the POP token is absent or invalid under the token scheme then the resource owner MUST deny access to the protected resource. Failure responses are left for future specification as they are specific to the token scheme.
+If the POP token is absent or invalid under the token scheme then the resource owner SHOULD deny access to the protected resource. Failure responses are left for future specification as they are specific to the token scheme.
 
 == Rationale ==
 
