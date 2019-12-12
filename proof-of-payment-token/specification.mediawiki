@@ -19,7 +19,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 The rule URI-reference is included from [[https://tools.ietf.org/html/rfc3986|Uniform Resource Identifier (URI): Generic Syntax]].
 
-Certain security-related terms are to be understood in the sense defined in [https://tools.ietf.org/html/rfc4949|RFC4949].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "confidentiality" "credential", "encryption", "identity", "sign", "signature", "trust", "validate", and "verify".
+Certain security-related terms are to be understood in the sense defined in [https://tools.ietf.org/html/rfc4949|RFC4949].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
 
 Unless otherwise noted, all the protocol parameter names and values are case sensitive.
 
@@ -101,11 +101,11 @@ message PaymentRequest {
 }
 </pre>
 
-The server SHOULD populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message. The authentication server SHOULD be able to interpret this data and use it to construct a POP token. The details of this data are inconsequential to the main flow of the protocol and is left for future specification.
+The server SHOULD populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message. The authentication server SHOULD be able to interpret this data and use it to construct a POP token. The details of this data are inconsequential to the main flow of the protocol and are left for future specification.
 
 ==== Payment & Token Issuance ====
 
-The client sends the <code>Payment</code> in the body of a POST request to the <code>payment_url</code> specified in the <code>PaymentDetails</code> and the server responds with a payment acknowledgement message. This is performed in accordance with BIP70.
+The client sends the <code>Payment</code> in the body of a POST request to the <code>payment_url</code> specified in the <code>PaymentDetails</code> and the server responds with a payment acknowledgement message. This MUST be performed in accordance with BIP70.
 
 <pre>
 message Payment {
