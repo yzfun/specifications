@@ -19,7 +19,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 The rule URI-reference is included from [[https://tools.ietf.org/html/rfc3986|Uniform Resource Identifier (URI): Generic Syntax]].
 
-Certain security-related terms are to be understood in the sense defined in [https://tools.ietf.org/html/rfc4949|RFC4949].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
+Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
 
 Unless otherwise noted, all the protocol parameter names and values are case sensitive.
 
@@ -157,4 +157,5 @@ Stateless protocols provide a myriad of benefits including scalability, availabi
 * [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]]
 * [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119 - RFC Key Words]]
 * [[https://tools.ietf.org/html/rfc3986|RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax]]
+* [[https://tools.ietf.org/html/rfc4949|RFC 4949 - Internet Security Glossary, Version 2]]
 * [[https://tools.ietf.org/html/rfc5280|RFC 5280 - X.509 Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile]]
