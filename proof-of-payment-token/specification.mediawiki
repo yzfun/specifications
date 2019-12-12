@@ -11,7 +11,7 @@
 
 === Abstract ===
 
-The Proof-of-Payment (POP) token authorization framework enables a third-party application to obtain access to an HTTP resource via Bitcoin Cash payment.
+The Proof-of-Payment (POP) authorization framework enables a third-party application to obtain access to an HTTP resource via Bitcoin Cash payment.
 
 === Notational Conventions ===
 
@@ -31,7 +31,7 @@ Bitcoin allows payments across the internet without the need for trusted interme
 
 Authorization token schemes, such as [[https://tools.ietf.org/html/rfc6750|Bearer tokens (RFC6750)]], provide managed access to protected resources.
 
-A standardized protocol combining authorization tokens with BIP70 would provide merchants with a pluggable way to monetize their services.
+A standardized protocol combining authorization tokens with BIP70 would provide merchants with an elegant way to monetize their services.
 
 === Terminology ===
 
@@ -52,9 +52,9 @@ A standardized protocol combining authorization tokens with BIP70 would provide 
 
 == Specification ==
 
-We superimpose a token-style protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to gain access to the associated resources (without demonstrating possession of a cryptographic key).
+We superimpose a Bearer token protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to gain access to the associated resources (without demonstrating possession of a cryptographic key).
 
-The typical token roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
+The typical roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
 
 The protocol's messages are encoded via [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]], authenticated using [[https://tools.ietf.org/html/rfc5280|X.509 certificates]], and communicated over [[https://tools.ietf.org/html/rfc2616|HTTP/1.1]] using [[[https://tools.ietf.org/html/rfc5246|Transport Layer Security (TLS)]]]. Implementations MUST use TLS to ensure security against various attacks.
 
@@ -143,7 +143,7 @@ The BIP70 payment protocol is a widely adopted standard. Extending it allows wal
 
 === Statelessness ===
 
-Stateless protocols provide a myriad of benefits including scalability, availability, and speed. Consequently, the protocol has been designed with statelessness in mind. If the token scheme and merchant data is specified correctly no session state is required server side.
+Stateless protocols provide a myriad of benefits including scalability, availability, and speed. Consequently, the protocol has been designed with statelessness in mind.  If the token scheme and merchant data is specified, for example, as per the JWT standard, no state tracking is required.
 
 == Footnotes ==
 
