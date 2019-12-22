@@ -1,0 +1,45 @@
+\documentclass{standalone}
+\usepackage{msc}
+\standaloneenv{msc}
+
+\begin{document}
+
+\drawframe{no}
+\setlength{\instdist}{6cm}
+\setlength{\instwidth}{3.75cm}
+\setlength{\envinstdist}{3cm}
+
+\begin{msc}[c]{Proof-of-Payment Protocol Flow}
+    \declinst{A}{}{ Client }
+    \declinst{B}{}{ Resource Merchant }
+    \declinst{C}{}{ Payment Server }
+    \declinst{D}{}{ Bitcoin Node }
+    \declinst{E}{}{ Resource Server }
+    \regionstart{activation}{A}
+    \regionstart{activation}{B}
+    \mess{Authorization Request}{A}{B}
+    \nextlevel[2]
+    \mess{Payment Request}{B}{A}
+    \regionend{B}
+    \nextlevel[2]
+    \regionstart{activation}{C}
+    \mess{Payment}{A}[.75]{C}
+    \nextlevel
+    \regionstart{activation}{D}
+    \mess{Transaction}{A}[.833]{D}
+    \nextlevel[2]
+    \mess{Accepted}{D}{C}
+    \regionend{D}
+    \nextlevel[2]
+    \regionend{C}
+    \mess{PaymentAck \& Token}{C}[.75]{A}
+    \nextlevel[2]
+    \regionstart{activation}{E}
+    \mess{Request \& Token}{A}[.875]{E}
+    \nextlevel[2]
+    \mess{Response}{E}[.875]{A}
+    \regionend{E}
+    \regionend{A}
+\end{msc}
+
+\end{document}

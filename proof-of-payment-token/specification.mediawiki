@@ -1,0 +1,158 @@
+<pre>
+  Title: Proof-of-Payment Authorization Framework
+  Author: Shammah Chancellor <shammah.chancellor@cashweb.io>
+          Harry Barber <harry.barber@cashweb.io>
+  Status: Draft
+  Created: 2019-11-15
+  License: MIT
+</pre>
+
+== Introduction ==
+
+=== Abstract ===
+
+The Proof-of-Payment (POP) authorization framework enables a third-party application to obtain access to an HTTP resource via Bitcoin Cash payment.
+
+=== Notational Conventions ===
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]].
+
+The rule URI-reference is included from [[https://tools.ietf.org/html/rfc3986|Uniform Resource Identifier (URI): Generic Syntax]].
+
+Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
+
+Unless otherwise noted, all the protocol parameter names and values are case sensitive.
+
+=== Motivation ===
+
+Monetization of goods over the internet often involves the restriction of specific resources via some form of paywall. As a result, much of web design involves architecting complex authorization schemes involving third party payment processors via some form of subscription-based API Key. 
+
+Bitcoin allows payments across the internet without the need for trusted intermediaries and the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki|BIP70 Payment Protocol]] provides an extra layer of customer assurance during payments.
+
+Authorization token schemes, such as [[https://tools.ietf.org/html/rfc6750|Bearer tokens (RFC6750)]], provide managed access to protected resources.
+
+A standardized protocol combining authorization tokens with BIP70 would provide merchants with an elegant way to monetize their services.
+
+=== Terminology ===
+
+;Proof-of-Payment (POP) Token
+: An authorization token with the property that any party in possession of the token (a "bearer") can use the token in any way that any other party in possession of it can. Using a POP token does not require a bearer to prove possession of cryptographic key material (proof-of-possession).
+
+;Resource Merchant
+: An entity capable of requesting payment for a protected resource. 
+
+;Resource Server
+: The server hosting the protected resources, capable of accepting and responding to protected resource requests using POP tokens.
+
+;Payment Server
+: The server issuing POP tokens to the client after successfully authenticating the resource merchant, verifying payment, and obtaining authorization.
+
+;Client
+: An application making protected resource requests on behalf of the resource merchant and with its authorization. The term "client" does not imply any particular implementation characteristics (e.g., whether the application executes on a server, a desktop, or other devices).
+
+== Specification ==
+
+We superimpose a Bearer token protocol onto BIP70 to allow clients to pay for authorization tokens. Any party in possession of an authorization token can use it to gain access to the associated resources (without demonstrating possession of a cryptographic key).
+
+The typical roles of "resource owner" and "authorization server", seen in [[https://tools.ietf.org/html/rfc6749|The OAuth 2.0 Authorization Framework]], are replaced by the "resource merchant" and "payment server" respectively.
+
+The protocol's messages are encoded via [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]], authenticated using [[https://tools.ietf.org/html/rfc5280|X.509 certificates]], and communicated over [[https://tools.ietf.org/html/rfc2616|HTTP/1.1]] using [[[https://tools.ietf.org/html/rfc5246|Transport Layer Security (TLS)]]]. Implementations MUST use TLS to ensure security against various attacks.
+
+This protocol extends the BIP70 protocol and follows closely the OAuth Authorization Framework, and therefore prior knowledge of them is advised.
+
+Note that BIP70 must be suplemented with [[https://github.com/bitcoin/bips/blob/master/bip-0071.mediawiki|BIP71]] and [[https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki|BIP72]], and that both take on a slightly altered form<ref>The headers are as described https://lists.linuxfoundation.org/pipermail/bitcoin-ml/2017-August/000177.html</ref> for Bitcoin Cash. We refer to this this collection of BIPs as BIP70 from hereon after.
+
+=== Protocol Flow ===
+
+[[File:diagrams/flow.png|framed|center|Figure 1. Abstract Protocol Flow]]
+
+The abstract protocol flow illustrated in Figure 1 describes the interaction between the four roles described above and includes the following steps:
+
+# The Client requests authorization from the resource merchant.
+# The resource merchant responds with a BIP70 payment request.
+# The client sends a BIP70 payment fulfilling the payment request to the payment server.
+# The payment server verifies the payment then responds with a BIP70 payment acknowledgement and a POP token.
+# Client sends a request, with the POP token attached, to the resource server.
+# The resource server validates the token, processes the request and then returns the protected resource.
+
+==== Authorization Request & Payment Request ====
+
+The client requests authorization from the resource merchant. The resource merchant MAY choose to reject the request. Under what conditions and how the resource merchant decides to reject requests are outside the scope of this specification.
+
+If the merchant chooses to serve the request, the response MUST have status code <code>402</code> (''Payment Required'') and the <code>PaymentRequest</code> message defined in the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#PaymentDetailsPaymentRequest|PaymentDetails/PaymentRequest]] section of BIP70.
+
+<pre>
+message PaymentDetails {
+        optional string network = 1 [default = "main"]; // "main" or "test"
+        repeated Output outputs = 2;        // Where payment should be sent
+        required uint64 time = 3;           // Timestamp; when payment request created
+        optional uint64 expires = 4;        // Timestamp; when this request should be considered invalid
+        optional string memo = 5;           // Human-readable description of request for the customer
+        optional string payment_url = 6;    // URL to send Payment and get PaymentACK
+        optional bytes merchant_data = 7;   // Arbitrary data to include in the Payment message
+}
+
+message PaymentRequest {
+        optional uint32 payment_details_version = 1 [default = 1];
+        optional string pki_type = 2 [default = "none"];  // none / x509+sha256 / x509+sha1
+        optional bytes pki_data = 3;                      // depends on pki_type
+        required bytes serialized_payment_details = 4;    // PaymentDetails
+        optional bytes signature = 5;                     // pki-dependent signature
+}
+</pre>
+
+The server SHOULD populate <code>merchant_data</code> field of the <code>PaymentDetails</code> message. The authentication server SHOULD be able to interpret this data and use it to construct a POP token. The details of this data are inconsequential to the main flow of the protocol and are left for future specification.
+
+==== Payment & Token Issuance ====
+
+The client sends the <code>Payment</code> in the body of a POST request to the <code>payment_url</code> specified in the <code>PaymentDetails</code> and the server responds with a payment acknowledgement message. This MUST be performed in accordance with BIP70.
+
+<pre>
+message Payment {
+        optional bytes merchant_data = 1;  // From PaymentDetails.merchant_data
+        repeated bytes transactions = 2;   // Signed transactions that satisfy PaymentDetails.outputs
+        repeated Output refund_to = 3;     // Where to send refunds, if a refund is necessary
+        optional string memo = 4;          // Human-readable message for the merchant
+}
+</pre>
+
+The <code>merchant_data</code> in the <code>Payment</code> message MUST be equal to the <code>merchant_data</code> in the servers <code>PaymentDetails</code>. Note that a malicious client MAY modify the <code>merchant_data</code>, and hence it is RECOMMENDED that it is authenticated in some way (for example, signed with a merchant-only key). 
+
+In addition to the BIP70 procedure, the server generates the POP token. The resource server SHOULD be able to authenticate access to the protected resource using this token.
+
+This response MUST have status code <code>202</code> and include a <code>Authorization</code> header <code>POP {token string}</code>.
+
+As with RFC6750, in some cases, a client can directly pay a payment server to obtain a POP token without having to first obtain an payment request from a resource merchant if there is prior knowledge of the <code>PaymentDetails</code>.
+
+==== Authorized Request ====
+
+The client sends a request to the resource server for the protected resource.
+
+The server SHOULD extract the POP token from the requests <code>Authorization</code> header.
+
+If the POP token is absent or invalid under the token scheme then the resource owner SHOULD deny access to the protected resource. Failure responses are left for future specification as they are specific to the token scheme.
+
+== Rationale ==
+
+=== BIP 70 ===
+
+The BIP70 payment protocol is a widely adopted standard. Extending it allows wallet developers to integrate the protocol with minimal work.
+
+=== Statelessness ===
+
+Stateless protocols provide a myriad of benefits including scalability, availability, and speed. Consequently, the protocol has been designed with statelessness in mind.  If the token scheme and merchant data is specified, for example, as per the JWT standard, no state tracking is required.
+
+== Footnotes ==
+
+<references />
+
+== References ==
+
+* [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki|BIP70 Payment Protocol]]
+* [[https://github.com/bitcoin/bips/blob/master/bip-0071.mediawiki|BIP71 Payment Protocol MIME types]]
+* [[https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki|BIP72 bitcoin: uri extensions for Payment Protocol]]
+* [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]]
+* [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119 - RFC Key Words]]
+* [[https://tools.ietf.org/html/rfc3986|RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax]]
+* [[https://tools.ietf.org/html/rfc4949|RFC 4949 - Internet Security Glossary, Version 2]]
+* [[https://tools.ietf.org/html/rfc5280|RFC 5280 - X.509 Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile]]
