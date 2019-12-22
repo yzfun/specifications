@@ -1,7 +1,7 @@
 <pre>
   Title: Proof-of-Payment Authorization Framework
-  Author: Shammah Chancellor <email@here.com>
-          Harry Barber <harrybarber@protonmail.com>
+  Author: Shammah Chancellor <shammah.chancellor@cashweb.io>
+          Harry Barber <harry.barber@cashweb.io>
   Status: Draft
   Created: 2019-11-15
   License: MIT
