@@ -18,7 +18,7 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
 
 <h2>
 <p align="center">
- Relay Server Design Document
+ Cash Relay
 </p>
 </h2>
 
