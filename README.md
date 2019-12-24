@@ -28,7 +28,7 @@ Cash Relay is a service allowing clients to send encrypted messages across the i
 
 <p align="center">
   <a href="/cash-relay-doc/design-doc.mediawiki">
-    Specification
+    Design Document
   </a> | <a href="https://github.com/cashweb/cash-relay">
     Reference Implementation
   </a> | <a href="https://github.com/cashweb/relay-proto">
