@@ -15,3 +15,23 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
     Protobuf Schema
   </a>
 </p>
+
+<h2>
+<p align="center">
+ Relay Server Design Document
+</p>
+</h2>
+
+<p align="center">
+Cash Relay is a service allowing clients to send encrypted messages across the internet while providing spam protection using Bitcoin-based tokenized work.
+</p>
+
+<p align="center">
+  <a href="/cash-relay-doc/design-doc.mediawiki">
+    Specification
+  </a> | <a href="https://github.com/cashweb/cash-relay">
+    Reference Implementation
+  </a> | <a href="https://github.com/cashweb/relay-proto">
+    Protobuf Schema
+  </a>
+</p>
