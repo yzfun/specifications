@@ -18,12 +18,12 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
 
 <h2>
 <p align="center">
- Keyserver
+ Keyserver Protocol
 </p>
 </h2>
 
 <p align="center">
-TODO
+The keyserver protocol allows public, cryptographically verifiable, replicated storage of <code>address:metadata</code> pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol.
 </p>
 
 <p align="center">

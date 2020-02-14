@@ -11,7 +11,7 @@
 
 === Abstract ===
 
-The keyserver protocol allows public, cryptographically verifiable, replicated storage of Address:Metadata pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol. 
+The keyserver protocol allows public, cryptographically verifiable, replicated storage of <code>address:metadata</code> pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol.
 
 === Notational Conventions ===
 
@@ -173,7 +173,11 @@ When the keyserver receives a PUT request to <code>/keys/{addr}</code> with the 
 
 == Peer-to-Peer Specification ==
 
-Keyservers are required to communicate between each other to allow replication. 
+Keyservers are required to communicate between each other to allow replication.
+
+Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata may store POP tokens, wait for a confirmation and then push said metadata to their peers free of charge.
+
+
 
 == Footnotes ==
 
