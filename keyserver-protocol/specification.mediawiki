@@ -27,33 +27,7 @@ Unless otherwise noted, all the protocol parameter names and values are case sen
 
 Traditional keyservers are subject to certificate spamming attacks. By being a first-class citizen in the cryptocurrency ecosystem, we are able to charge for key updates. This prevents an explosion of advertised certificates, and provides some funding for node operators. Other systems like OpenAlias, require that you trust the service provider is providing the correct addresses, while this keyserver cannot forge such updates as they are tied to a keyid which has been provided via another channel. At most, a malicious keyserver can censor a particular key, in which case other keyservers will provide it.
 
-== REST API Specification ==
-
-We use the [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]] to avoid spam by requiring the client pays to commit to metadata onchain. The commitment also acts as an anchor to allow reconciliation among keyservers.
-
-The keyserver MUST provide the following endpoints:
-
-{| class="wikitable"
-! style="font-weight:bold;" | Path
-! style="font-weight:bold;" | Method
-! style="font-weight:bold;" | Purpose
-! style="font-weight:bold;" | Protection
-|-
-| /keys/{addr}
-| GET
-| Get metadata from store
-| None
-|-
-| /keys/{addr}
-| PUT
-| Put metadata to store
-| Requires POP token
-|-
-| /commit
-| POST
-| Initiate the purchase of a POP token
-| None
-|}
+== Overview ==
 
 === Metadata ===
 
@@ -112,6 +86,37 @@ Bitcoin has three standard networks: mainnet, testnet and regtest. The keyserver
 
 Segregating operation like this reduces confusion and provides testbeds.
 
+== REST API Specification ==
+
+The keyserver provides a REST API to allow clients and other keyservers to get and put metadata.
+
+We use the [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]] to avoid spam by requiring the client pays to commit to metadata onchain. The commitment also acts as an anchor to allow reconciliation among keyservers.
+
+The keyserver MUST provide the following endpoints:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Path
+! style="font-weight:bold;" | Method
+! style="font-weight:bold;" | Purpose
+! style="font-weight:bold;" | Protection
+|-
+| /keys/{addr}
+| GET
+| Get metadata from store
+| None
+|-
+| /keys/{addr}
+| PUT
+| Put metadata to store
+| Requires POP token
+|-
+| /commit
+| POST
+| Initiate the purchase of a POP token
+| None
+|}
+
+
 === Getting Metadata ===
 
 To get metadata the client MUST send a GET request to <code>/keys/{addr}</code> with an empty body.
@@ -129,25 +134,25 @@ The keyserver MUST then perform the following steps:
 
 Before putting metadata to the keyserver the client SHOULD obtain a POP token.
 
-To initiate the payment process the client MUST first send a PUT request to <pre>/commit</pre> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest the concatenation of public key hash of the desired PUT address and the serialized <code>AddressMetadata</code>.
+To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the concatenation of the public key hash associated to the desired PUT address and the serialized <code>AddressMetadata</code>.
 
 <pre>metadata commitment = SHA256(public key hash || address metadata)</pre>
 
-This initial request acts as the authorization request in the Proof-of-Payment Authorization framework.
+This initial request acts as the authorization request in the POP token protocol.
 
 On receiving such a request the kesyerver MUST check whether digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
 
-The commitment digest will be committed to chain and signals to other keyservers that this address:metadata pair has provided the tokenized proof-of-work required to be replicated.
+The metadata commitment will be committed to chain and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
 
 Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
 
 The keyserver MUST continue to follow the POP protocol with following the additions:
 
-* It is RECOMMENDED that the commitment digest is included in the <code>merchant_data</code> field of the <code>PaymentDetails</code> message to allow for a stateless protocol.
+* It is RECOMMENDED that the metadata commitment is included in the <code>merchant_data</code> field of the <code>PaymentDetails</code> message to allow for a stateless protocol.
 * It is RECOMMENDED that the <code>outputs</code> field of the <code>PaymentRequest</code> message is a one element list consisting of an OP_RETURN output containing the message digest. It is REQUIRED that this onchain commitment is made, however altruistic keyservers MAY choose to broadcast such a transaction themselves.
-* It is RECOMMENDED that the POP token presented to the client contains the transaction ID and output index of the OP_RETURN.
+* The POP token presented to the client MUST consist of the base64 encoding of the concatenation of the raw transaction ID and big endian serialization output index.
 
-Divergence from these recommendations SHOULD NOT disrupt the operation a client following the POP token protocol. Furthermore, providing that a transaction with the required OP_RETURN is broadcast to the Bitcoin network then the peer-to-peer protocol remains unaffected.
+Divergence from the recommendations above SHOULD NOT disrupt the operation a client following the POP token protocol. Furthermore, providing that a transaction with the required OP_RETURN is broadcast to the Bitcoin network then the peer-to-peer protocol remains unaffected.
 
 === Putting Metadata ===
 
@@ -167,6 +172,8 @@ When the keyserver receives a PUT request to <code>/keys/{addr}</code> with the 
 # Return status code <code>200</code>.
 
 == Peer-to-Peer Specification ==
+
+Keyservers are required to communicate between each other to allow replication. 
 
 == Footnotes ==
 
