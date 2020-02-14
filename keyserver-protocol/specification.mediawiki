@@ -11,7 +11,7 @@
 
 === Abstract ===
 
-The keyserver protocol allows public, cryptographically verifiable, replicated storage of <code>address:metadata</code> pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol.
+The keyserver protocol allows public, Denial-of-Service resistant, cryptographically verifiable, replicated storage of <code>address:metadata</code> pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol.
 
 === Notational Conventions ===
 
@@ -128,11 +128,12 @@ The keyserver MUST then perform the following steps:
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Lookup the public key hash using an internal database then respond with status code <code>200</code> and the serialized <code>AddressMetadata</code> in the message body.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
+#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
 
 === Proof-of-Payment Authorization ===
 
-Before putting metadata to the keyserver the client SHOULD obtain a POP token.
+Before putting metadata to the keyserver the client SHOULD first obtain a POP token.
 
 To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the concatenation of the public key hash associated to the desired PUT address and the serialized <code>AddressMetadata</code>.
 
@@ -148,23 +149,25 @@ Note that this is a commitment to a '''''specific encoding''''' of the <code>Add
 
 The keyserver MUST continue to follow the POP protocol with following the additions:
 
-* It is RECOMMENDED that the metadata commitment is included in the <code>merchant_data</code> field of the <code>PaymentDetails</code> message to allow for a stateless protocol.
 * It is RECOMMENDED that the <code>outputs</code> field of the <code>PaymentRequest</code> message is a one element list consisting of an OP_RETURN output containing the message digest. It is REQUIRED that this onchain commitment is made, however altruistic keyservers MAY choose to broadcast such a transaction themselves.
 * The POP token presented to the client MUST consist of the base64 encoding of the concatenation of the raw transaction ID and big endian serialization output index.
 
-Divergence from the recommendations above SHOULD NOT disrupt the operation a client following the POP token protocol. Furthermore, providing that a transaction with the required OP_RETURN is broadcast to the Bitcoin network then the peer-to-peer protocol remains unaffected.
+Note that clients may opt to completely skip this step by broadcasting the transaction and constructing the POP token themselves.
 
 === Putting Metadata ===
 
-When the keyserver receives a PUT request to <code>/keys/{addr}</code> with the serialized <code>AddressMetadata</code>, the following steps are performed:
+To get metadata the client MUST send a PUT request to <code>/keys/{addr}</code> with the serialized <code>AddressMetadata</code> as the body.
+
+The keyserver MUST then perform the following steps:
 
 # Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Check that the request body is non-empty and successfully deserializes into a <code>AddressMetadata</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>Payload</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # The RECOMMENDED POP token validation method consists of extracting the transaction ID and output index, fetching the metadata digest, and then comparing it to digest of the reported public key hash and serialized <code>AddressMetadata</code>.
-#* If the POP token fails validation then it is RECOMMENDED that the keyserver responds with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-#* If the POP token is missing from the <code>Authorization</code> header then it is RECOMMENDED that the keyserver responds with status code <code>402</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Check that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field.
 #* If the signature is found to be invalid or the <code>scheme</code> is not found then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # If the an existing <code>AddressMetadata</code> message exists at the public key hash of the internal database then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
@@ -175,12 +178,41 @@ When the keyserver receives a PUT request to <code>/keys/{addr}</code> with the 
 
 Keyservers are required to communicate between each other to allow replication.
 
-Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata may store POP tokens, wait for a confirmation and then push said metadata to their peers free of charge.
+Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata may store POP tokens, wait for a confirmation and then push said metadata to their peers free of charge.
 
+=== Messages ===
 
+TODO
+
+* INV message and response
+* Sync messages
+
+=== Peer List ===
+
+TODO
+
+=== Synchronization ===
+
+TODO
+
+# Bootstrap peer list.
+
+# Slice requests up into lexicographic intervals and pages, request at from peers at random.
+
+# Use block height to create merkle tree at given point in time as a fixed state to reconcile over?
+
+=== Gossip ===
+
+# When accepting a metadata from a client the keyserver MUST check the number of confirmations of the payment transaction. If the transaction has two confirmations the keyserver MUST to procede to the next step, otherwise the MUST cache the POP token and address then wait for two confirmations before proceeding.
+# The keyserver MUST randomly select four or more peers from the peer list. For each peer it MUST send an INV message to them consisting of all pending metadata. After receiving the INV response it MUST then use the cached POP tokens to send the peer the associated metadata.
+
+Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers.
 
 == Footnotes ==
 
 <references />
 
 == References ==
+* [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
+* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
