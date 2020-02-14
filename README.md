@@ -15,3 +15,21 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
     Protobuf Schema
   </a>
 </p>
+
+<h2>
+<p align="center">
+ Keyserver
+</p>
+</h2>
+
+<p align="center">
+TODO
+</p>
+
+<p align="center">
+  <a href="/proof-of-payment-token/specification.mediawiki">
+    Specification
+  </a> | <a href="https://github.com/cashweb/pop-proto">
+    Protobuf Schema
+  </a>
+</p>
