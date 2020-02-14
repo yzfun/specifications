@@ -27,9 +27,7 @@ Unless otherwise noted, all the protocol parameter names and values are case sen
 
 Traditional keyservers are subject to certificate spamming attacks. By being a first-class citizen in the cryptocurrency ecosystem, we are able to charge for key updates. This prevents an explosion of advertised certificates, and provides some funding for node operators. Other systems like OpenAlias, require that you trust the service provider is providing the correct addresses, while this keyserver cannot forge such updates as they are tied to a keyid which has been provided via another channel. At most, a malicious keyserver can censor a particular key, in which case other keyservers will provide it.
 
-== Specification ==
-
-We specify a REST API and peer-to-peer protocol sufficient to implement the keyservers replicated key/value store. The keys are Bitcoin Cash addresses and the values are signed and timestamped metadata.
+== REST API Specification ==
 
 We use the [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]] to avoid spam by requiring the client pays to commit to metadata onchain. The commitment also acts as an anchor to allow reconciliation among keyservers.
 
@@ -50,11 +48,16 @@ The keyserver MUST provide the following endpoints:
 | PUT
 | Put metadata to store
 | Requires POP token
+|-
+| /commit
+| POST
+| Initiate the purchase of a POP token
+| None
 |}
 
 === Metadata ===
 
-The central data type in the keyserver is the <code>AddressMetadata</code> message which is specified in the following [https://developers.google.com/protocol-buffers/docs/proto3|proto3] schema.
+The central data type in the keyserver is the <code>AddressMetadata</code> message which is specified in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
 
 <pre>
 syntax = "proto3";
@@ -111,27 +114,46 @@ Segregating operation like this reduces confusion and provides testbeds.
 
 === Getting Metadata ===
 
-When the keyserver receives a GET request to <code>/keys/{addr}</code> the following steps are performed.
+When the keyserver receives a GET request to <code>/keys/{addr}</code> the following steps MUST be performed:
 
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address it MUST be decoded returning the underlying public key hash.
+# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
 #* Both base58 and cashaddr address formats MUST be supported.
-#* Invalid addresses should be responded to with status code <code>400</code> and SHOULD yield an appropriate error message.
-# The keyserver MUST lookup the public key hash from its internal database then respond with status code <code>200</code> and the serialized <code>AddressMetadata</code> in the message body.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Lookup the public key hash using an internal database then respond with status code <code>200</code> and the serialized <code>AddressMetadata</code> in the message body.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
-
-=== Putting Metadata ===
-
-When the keyserver receives a PUT request to <code>/keys/{addr}</code> the following steps are performed.
 
 === Proof-of-Payment Authorization ===
 
 Before putting metadata to the keyserver the client MUST obtain a POP token.
 
-The keyserver MUST follow the Proof-of-Payment Authorization framework where:
+To initiate the payment process the client SHOULD first send a PUT request to <pre>/commit</pre> with body containing a "commitment digest". This the public key hash of the desired PUT address concatenated with the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the serialized <code>AddressMetadata</code>. 
 
-* A PUT to <pre>/keys/{addr}</pre> with body containing the metadata digest.
+This initial commitment acts as the authorization request in the Proof-of-Payment Authorization framework.
 
+On receiving such a request the kesyerver MUST first perform the following steps:
+
+# Validate the public key hash, if invalid the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check whether digest given is not 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
+
+This commitment digest will be committed to chain and signals to other keyservers that this address:metadata pair has provided the tokenized proof-of-work required to be replicated.
+
+Note here that this is a commitment to a specific encoding of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Specical care MUST be taken in regards to this - a keyserver MUST NOT deserialize then serialize a <code>AddressMetadata</code> under the assumption that it still subject to the commitment.
+
+The keyserver MUST continue to follow the POP protocol with following the additional requirements:
+
+* It is RECOMMENDED that the commitment digest is included in the <code>merchant_data</code> field of the <code>PaymentDetails</code> message to allow for a stateless protocol.
+* It is RECOMMENDED that the <code>outputs</code> field of the <code>PaymentRequest</code> message is a one element list consisting of an OP_RETURN output containing the message digest. It is REQUIRED that this onchain commitment is made, however altruistic keyservers MAY choose to broadcast such a transaction themselves.
+
+=== Putting Metadata ===
+
+When the keyserver receives a PUT request to <code>/keys/{addr}</code> the following steps are performed.
+
+# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD yield an appropriate error message.
+
+== Peer-to-Peer Specification ==
 
 == Footnotes ==
 

@@ -27,9 +27,9 @@ TODO
 </p>
 
 <p align="center">
-  <a href="/proof-of-payment-token/specification.mediawiki">
+  <a href="/keyserver-protocol/specification.mediawiki">
     Specification
-  </a> | <a href="https://github.com/cashweb/pop-proto">
+  </a> | <a href="https://github.com/cashweb/keyserver-proto">
     Protobuf Schema
   </a>
 </p>
