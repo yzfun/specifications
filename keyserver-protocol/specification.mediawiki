@@ -158,7 +158,7 @@ Note that clients may opt to completely skip this step by broadcasting the trans
 
 === Putting Metadata ===
 
-To get metadata the client MUST send a PUT request to <code>/keys/{addr}</code> with the serialized <code>AddressMetadata</code> as the body.
+To upload metadata the client MUST send a PUT request to <code>/keys/{addr}</code> with the serialized <code>AddressMetadata</code> as the body.
 
 The keyserver MUST then perform the following steps:
 
