@@ -176,7 +176,7 @@ The keyserver MUST then perform the following steps:
 
 == Peer-to-Peer Specification ==
 
-Keyservers are required to communicate between each other to allow replication.
+Keyservers are required to communicate between each other to allow replication, we propose a peer-to-peer gossip protocol.
 
 Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata may store POP tokens, wait for a confirmation and then push said metadata to their peers free of charge.
 
