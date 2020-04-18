@@ -84,7 +84,7 @@ message AddressMetadata  {
 
 Bitcoin has three standard networks: mainnet, testnet and regtest. The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
 
-Segregating operation like this reduces confusion and provides testbeds.
+We segregate operation like this to reduce confusion and provides testbeds.
 
 == REST API Specification ==
 
@@ -100,6 +100,11 @@ The keyserver MUST provide the following endpoints:
 ! style="font-weight:bold;" | Purpose
 ! style="font-weight:bold;" | Protection
 |-
+| /commit
+| POST
+| Initiate the purchase of a POP token
+| None
+|-
 | /keys/{addr}
 | GET
 | Get metadata from store
@@ -109,13 +114,7 @@ The keyserver MUST provide the following endpoints:
 | PUT
 | Put metadata to store
 | Requires POP token
-|-
-| /commit
-| POST
-| Initiate the purchase of a POP token
-| None
 |}
-
 
 === Getting Metadata ===
 
@@ -137,9 +136,9 @@ Note that this means requests using different encodings of the same underlying p
 
 Before putting metadata to the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
 
-To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the concatenation of the public key hash associated to the desired PUT address and the serialized <code>AddressMetadata</code>.
+To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the concatenation of the public key hash associated with the desired PUT address and the serialized <code>AddressMetadata</code>.
 
-<pre>metadata commitment = SHA256(public key hash || address metadata)</pre>
+<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
 
 This initial request acts as the authorization request in the POP token protocol.
 
