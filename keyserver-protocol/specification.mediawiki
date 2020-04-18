@@ -184,12 +184,277 @@ Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparat
 
 === Messages ===
 
+The following magic bytes are used to protect against garbage messages:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Network
+! style="font-weight:bold;" | Magic Bytes
+|-
+| mainnet
+| 0x282a3ebb
+|-
+| testnet
+| 0x9afbce9f
+|-
+| regtest
+| 0xebdade69
+|}
+
+These are the first 4 bytes of the SHA256 digest of the utf-8 encoding of network. For example, <code>SHA256("mainnet")[:4] = 0x282a3ebb</code>.
+
+All messages are wrapped as follows:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| 4
+| Magic bytes
+| Bytes
+| Construction is described above
+|-
+| 1
+| Payload type
+| Unsigned Integer
+| Denotes the message type
+|-
+| 1
+| Payload size
+| Variable-length Integer
+| Denotes the message type
+|-
+| Variable
+| Payload
+| Bytes
+| The actual data
+|}
+
+The message types are as follows:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Payload Size
+! style="font-weight:bold;" | Payload Type
+! style="font-weight:bold;" | Description
+|-
+| Variable
+| 0
+| Metadata Summary
+|-
+| 4
+| 1
+| Version
+|-
+| 0
+| 2
+| Version Ack
+|-
+| 0
+| 3
+| Ping
+|-
+| 0
+| 4
+| Pong
+|-
+| 0
+| 5
+| Get Peers
+|-
+| Variable
+| 6
+| Peer INV
+|-
+| 50
+| 6
+| Get Page
+|-
+| Variable
+| 7
+| Page
+|-
+| TODO
+| 8
+| Get Chaintip
+|-
+| TODO
+| 9
+| Chaintip
+|-
+|}
+
+==== Version ====
+
+A payload blob for the "Version" message.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| 16
+| IPv6 Address
+| Bytes
+| The IPv6 address of the peer
+|-
+| 2
+| REST API port
+| Unsigned Integer
+| 
+|-
+| 2
+| Peer-to-peer port
+| Unsigned Integer
+| 
+|-
+|}
+
+==== Peer ====
+
+A blob representing a single live peer.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| 16
+| IPv6 Address
+| Bytes
+| The IPv6 address of the peer
+|-
+| 2
+| REST API port
+| Unsigned Integer
+| 
+|-
+| 2
+| Peer-to-peer port
+| Unsigned Integer
+| 
+|-
+|}
+
+==== Peer INV ====
+
+A payload blob for the "Peer INV" message.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| Variable
+| Peer count
+| Variable-length Integer
+| Specifies the number of peers
+|-
+| Variable
+| List of Peers
+| Concatenation of Peers
+| 
+|-
+|}
+
+==== Get Page ====
+
+A payload blob for the "Get Page" message.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| 25
+| Start Digest
+| Bytes
+| The start of the page
+|-
+| 25
+| End Digest
+| Bytes
+| The end of the page
+|-
+|}
+
+==== Metadata Wrapper ====
+
+A blob wrapping the serialized metadata.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| Variable
+| Metadata length
+| Variable-length Integer
+| The start of the page
+|-
+| 25
+| Serialized Metadata
+| Bytes
+| The protobuf serialization of the metadata
+|-
+| 32
+| Transaction ID
+| Bytes
+| 
+|-
+| 4
+| Output Index
+| Unsigned Integer
+| 
+|-
+|}
+
+==== Page ====
+
+A payload blob for the "Page" message.
+
+{| class="wikitable"
+! style="font-weight:bold;" | Field Size
+! style="font-weight:bold;" | Description
+! style="font-weight:bold;" | Data Type
+! style="font-weight:bold;" | Comments
+|-
+| 25
+| Start Digest
+| Bytes
+| The start of the page
+|-
+| 25
+| End Digest
+| Bytes
+| The end of the page
+|-
+| Variable
+| Metadata count
+| Variable-length Integer
+| 
+|-
+| Variable
+| List of Metadata Wrappers
+| Concatenation of Metadata Wrappers
+| 
+|-
+|}
+
+==== Get Chaintip ====
+
+A payload blob for the "Get Tip" message.
+
 TODO
 
-* INV message and response
-* Sync messages
+==== Chaintip ====
 
-=== Peer List ===
+A payload blob for the "Tip" message.
 
 TODO
 
@@ -199,9 +464,9 @@ TODO
 
 # Bootstrap peer list.
 
-# Slice requests up into lexicographic intervals and pages, request from peers at random.
+# Slice requests up into lexicographic intervals/pages, request from peers at random. Do sampling to ensure consensus.
 
-# Use block height to create merkle tree at given point in time as a fixed state to reconcile over?
+# Use block height to create merkle tree at given point in time as a fixed reference point?
 
 === Gossip ===
 
