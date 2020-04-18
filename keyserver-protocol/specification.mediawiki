@@ -184,6 +184,8 @@ Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparat
 
 === Messages ===
 
+All fields are encoded in little-endian.
+
 The following magic bytes are used to protect against garbage messages:
 
 {| class="wikitable"
@@ -286,30 +288,7 @@ The message types are as follows:
 
 ==== Version ====
 
-A payload blob for the "Version" message.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| 16
-| IPv6 Address
-| Bytes
-| The IPv6 address of the peer
-|-
-| 2
-| REST API port
-| Unsigned Integer
-| 
-|-
-| 2
-| Peer-to-peer port
-| Unsigned Integer
-| 
-|-
-|}
+A payload blob for the "Version" message. A 32-bit unsigned integer representing the protocol version.
 
 ==== Peer ====
 
