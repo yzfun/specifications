@@ -29,13 +29,30 @@ Traditional keyservers are subject to certificate spamming attacks. By being a f
 
 == Overview ==
 
-=== Metadata ===
+=== Bitcoin Network ===
 
-The central data type in the keyserver is the <code>AddressMetadata</code> message which is specified in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
+Bitcoin has three standard networks: mainnet, testnet and regtest. The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
+
+We segregate operation like this to reduce confusion and provides testbeds.
+
+=== Public Key Hash ===
+
+Throughout this specification, the use of "public key hash" refers specificaly to
+
+<pre>VERSION BYTE || RIPEMD-160(SHA-256(PUBKEY))</pre>
+
+where the <code>PUBKEY</code> is the compressed public key and the <code>VERSION BYTE</code> is:
+
+# <code>0x00</code> for mainnet,
+# <code>0x6f</code> for testnet or regtest.
+
+=== Keyserver Messages ===
+
+The messages specific to the keyserver protocol are defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
 
 <pre>
 syntax = "proto3";
-package address_metadata;
+package keyserver;
 
 // Basic key/value used to store header data.
 message Header {
@@ -53,8 +70,8 @@ message Entry {
     bytes entry_data = 3;
 }
 
-// Payload is the user-specified data section of a AddressMetadata that is covered by the users signature.
-message Payload {
+// AddressMetadata is the user-specified data that is covered by the users signature.
+message AddressMetadata {
     // Timestamp allows servers to determine which version of the data is the most recent.
     int64 timestamp = 1;
     // TTL tells us how long this entry should exist before being considered invalid.
@@ -63,11 +80,30 @@ message Payload {
     repeated Entry entries = 3;
 }
 
-// AddressMetadata is the basic unit of the keyserver.  It is used in both PUT and GET requests.
-message AddressMetadata  {
-    // Serialized version of the XPubKey.  The *hash* of this XPub should correspond to the `key` in the kv store.
+// Peer represents a single live peer.
+message Peer {
+    // The URL pointing to the root of the keyserver REST API.
+    string url = 1;
+}
+
+// A list of peers.
+message Peers {
+    repeated Peer peers = 1;
+}
+</pre>
+
+=== Authorization Wrapper ===
+
+The <code>AuthorizationWrapper</code> is a proto3 message allowing payloads to be covered by a ECDSA or Schnorr signature. Within the keyserver protocol the <code>AddressMetadata</code> plays the role of the payload - having the metadata GET and PUT while wrapped provides integrity, authentication, and non-repuditation.
+
+<pre>
+syntax = "proto3";
+package wrapper;
+
+message AuthWrapper {
+    // Serialized version of the public key.
     bytes pub_key = 1;
-    // Signature is the signature of the metadata by XPubKey.
+    // Signature is the signature of the metadata by public key.
     bytes signature = 2;
     // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
     enum SignatureScheme {
@@ -75,16 +111,10 @@ message AddressMetadata  {
         ECDSA = 1;
     }
     SignatureScheme scheme = 3;
-    // Payload is the metadata set by the user, and covered by the signature.
+    // The serialized payload covered by the signature.
     bytes serialized_payload = 4;
 }
 </pre>
-
-=== Bitcoin Network ===
-
-Bitcoin has three standard networks: mainnet, testnet and regtest. The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
-
-We segregate operation like this to reduce confusion and provides testbeds.
 
 == REST API Specification ==
 
@@ -114,7 +144,19 @@ The keyserver MUST provide the following endpoints:
 | PUT
 | Put metadata to store
 | Requires POP token
+|-
+| /peers
+| GET
+| Get peer list
+| None
+|-
 |}
+
+=== Getting Peers ===
+
+It is RECOMMENDED that the keyserver maintains a peer list of other keyservers on the network. This provides a way for clients to retrieve more keyservers to sample from and for keyservers to replicate data across multiple machines. More information concerning the peer-to-peer keyserver protocol can be found in the [[Peer-to-Peer Specification]] section below.
+
+The list of peers SHOULD be retrievable via GET requests to the <code>/peers</code> endpoint. 
 
 === Getting Metadata ===
 
@@ -125,33 +167,40 @@ The keyserver MUST then perform the following steps:
 # Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Lookup the public key hash using an internal database then respond with status code <code>200</code> and the serialized <code>AddressMetadata</code> in the message body.
+# Lookup the public key hash using an internal database then respond with status code <code>200</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
 #* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
 
 Note that this means requests using different encodings of the same underlying pay-to-pubkey-hash address MUST retrieve the same metadata.
 
+<!-- It is RECOMMENDED that the keyserver maintains a peer list of other keyservers on the network. In the event of missing metadata, the keyserver SHOULD perform the following procedure:
+
+# Forward the GET request to a sample of peers
+# Collect the successful ressponses and find the  -->
+
 === Proof-of-Payment Authorization ===
 
 Before putting metadata to the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
 
-To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA-256]] digest of the concatenation of the public key hash associated with the desired PUT address and the serialized <code>AddressMetadata</code>.
+TODO: HMAC references
 
-<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
+To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|HMAC-SHA256]] digest of the concatenation of the public key hash associated with the desired PUT address and the serialized <code>AddressMetadata</code>.
 
-This initial request acts as the authorization request in the POP token protocol.
+<pre>metadata commitment = HMAC-SHA256(public key hash, address metadata)</pre>
 
-On receiving such a request the kesyerver MUST check whether digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
+This initial request acts as the "authorization request" in the POP token protocol.
 
-The metadata commitment will be committed to chain and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
+On receiving such a request the keyserver MUST check whether digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
+
+The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
 
 Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
 
 The keyserver MUST continue to follow the POP protocol with following the additions:
 
 * The <code>outputs</code> field of the <code>PaymentRequest</code> message MUST consist of an OP_RETURN output containing exactly the message commitment.
-* The POP token presented to the client MUST consist of the base64 encoding of the concatenation of the raw transaction ID and big endian serialization output index.
+* The POP token presented to the client MUST consist of the base64 encoding of the concatenation of the raw transaction ID and the 32-bit big-endian serialization of output index.
 
 Note that clients may opt to completely skip this step by broadcasting the transaction and constructing the POP token themselves.
 
@@ -176,283 +225,17 @@ The keyserver MUST then perform the following steps:
 
 == Peer-to-Peer Specification ==
 
-Keyservers are required to communicate between each other to allow replication, we propose a peer-to-peer gossip protocol.
+It is RECOMMENDED that keyservers communicate between each other to provide replication, we propose a simple peer-to-peer gossip protocol built atop of the existing REST API.
 
-Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata may store POP tokens, wait for a confirmation and then push said metadata to their peers free of charge.
+=== Push Gossip ===
+
+Note that the keyserver is REQUIRED to allow metadata to be put to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment. This means that peers who have just accepted metadata MAY cache POP tokens, wait for a confirmation and then push said metadata to their peers free of charge. Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers.
 
 Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparate keyservers have a common agreement on the existence of the transaction containing the metadata commitment.
 
-=== Messages ===
-
-All fields are encoded in little-endian.
-
-The following magic bytes are used to protect against garbage messages:
-
-{| class="wikitable"
-! style="font-weight:bold;" | Network
-! style="font-weight:bold;" | Magic Bytes
-|-
-| mainnet
-| 0x282a3ebb
-|-
-| testnet
-| 0x9afbce9f
-|-
-| regtest
-| 0xebdade69
-|}
-
-These are the first 4 bytes of the SHA256 digest of the utf-8 encoding of network. For example, <code>SHA256("mainnet")[:4] = 0x282a3ebb</code>.
-
-All messages are wrapped as follows:
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| 4
-| Magic bytes
-| Bytes
-| Construction is described above
-|-
-| 1
-| Payload type
-| Unsigned Integer
-| Denotes the message type
-|-
-| 1
-| Payload size
-| Variable-length Integer
-| Denotes the message type
-|-
-| Variable
-| Payload
-| Bytes
-| The actual data
-|}
-
-The message types are as follows:
-
-{| class="wikitable"
-! style="font-weight:bold;" | Payload Size
-! style="font-weight:bold;" | Payload Type
-! style="font-weight:bold;" | Description
-|-
-| Variable
-| 0
-| Metadata Summary
-|-
-| 4
-| 1
-| Version
-|-
-| 0
-| 2
-| Version Ack
-|-
-| 0
-| 3
-| Ping
-|-
-| 0
-| 4
-| Pong
-|-
-| 0
-| 5
-| Get Peers
-|-
-| Variable
-| 6
-| Peer INV
-|-
-| 50
-| 6
-| Get Page
-|-
-| Variable
-| 7
-| Page
-|-
-| TODO
-| 8
-| Get Chaintip
-|-
-| TODO
-| 9
-| Chaintip
-|-
-|}
-
-==== Version ====
-
-A payload blob for the "Version" message. A 32-bit unsigned integer representing the protocol version.
-
-==== Peer ====
-
-A blob representing a single live peer.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| 16
-| IPv6 Address
-| Bytes
-| The IPv6 address of the peer
-|-
-| 2
-| REST API port
-| Unsigned Integer
-| 
-|-
-| 2
-| Peer-to-peer port
-| Unsigned Integer
-| 
-|-
-|}
-
-==== Peer INV ====
-
-A payload blob for the "Peer INV" message.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| Variable
-| Peer count
-| Variable-length Integer
-| Specifies the number of peers
-|-
-| Variable
-| List of Peers
-| Concatenation of Peers
-| 
-|-
-|}
-
-==== Get Page ====
-
-A payload blob for the "Get Page" message.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| 25
-| Start Digest
-| Bytes
-| The start of the page
-|-
-| 25
-| End Digest
-| Bytes
-| The end of the page
-|-
-|}
-
-==== Metadata Wrapper ====
-
-A blob wrapping the serialized metadata.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| Variable
-| Metadata length
-| Variable-length Integer
-| The start of the page
-|-
-| 25
-| Serialized Metadata
-| Bytes
-| The protobuf serialization of the metadata
-|-
-| 32
-| Transaction ID
-| Bytes
-| 
-|-
-| 4
-| Output Index
-| Unsigned Integer
-| 
-|-
-|}
-
-==== Page ====
-
-A payload blob for the "Page" message.
-
-{| class="wikitable"
-! style="font-weight:bold;" | Field Size
-! style="font-weight:bold;" | Description
-! style="font-weight:bold;" | Data Type
-! style="font-weight:bold;" | Comments
-|-
-| 25
-| Start Digest
-| Bytes
-| The start of the page
-|-
-| 25
-| End Digest
-| Bytes
-| The end of the page
-|-
-| Variable
-| Metadata count
-| Variable-length Integer
-| 
-|-
-| Variable
-| List of Metadata Wrappers
-| Concatenation of Metadata Wrappers
-| 
-|-
-|}
-
-==== Get Chaintip ====
-
-A payload blob for the "Get Tip" message.
+=== Pull Gossip ===
 
 TODO
-
-==== Chaintip ====
-
-A payload blob for the "Tip" message.
-
-TODO
-
-=== Initial Synchronization ===
-
-TODO
-
-# Bootstrap peer list.
-
-# Slice requests up into lexicographic intervals/pages, request from peers at random. Do sampling to ensure consensus.
-
-# Use block height to create merkle tree at given point in time as a fixed reference point?
-
-=== Gossip ===
-
-# When accepting a metadata from a client the keyserver MUST check the number of confirmations of the payment transaction. If the transaction has two confirmations the keyserver MUST to procede to the next step, otherwise it MUST cache the POP token and address then wait for two confirmations before proceeding.
-# The keyserver MUST randomly select four or more peers from the peer list. For each peer it MUST send an INV message to them consisting of all pending metadata. After receiving the INV response it MUST then use the cached POP tokens to send the peer the associated metadata.
-
-Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers.
 
 == Footnotes ==
 
