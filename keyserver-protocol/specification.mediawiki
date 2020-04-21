@@ -43,8 +43,8 @@ Throughout this specification, the use of "public key hash" refers specificaly t
 
 where the <code>public key</code> is the compressed public key and the <code>version byte</code> is
 
-#* <code>0x00</code> for mainnet,
-#* <code>0x6f</code> for testnet or regtest.
+* <code>0x00</code> for mainnet,
+* <code>0x6f</code> for testnet or regtest.
 
 === Keyserver Messages ===
 
