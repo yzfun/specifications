@@ -54,7 +54,66 @@
 	abstract =	{This document defines the architecture of Netnews systems and specifies the correct manipulation and interpretation of Netnews articles by software that originates, distributes, stores, and displays them. It also specifies the requirements that must be met by any protocol used to transport and serve Netnews articles. {[}STANDARDS-TRACK{]}},
 }
 
+// Email
+@misc{rfc5322,
+	series =	{Request for Comments},
+	number =	5322,
+	howpublished =	{RFC 5322},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC5322},
+	url =		{https://rfc-editor.org/rfc/rfc5322.txt},
+  author =	{Pete Resnick},
+	title =		{{Internet Message Format}},
+	pagetotal =	57,
+	year =		2008,
+	month =		oct,
+	abstract =	{This document specifies the Internet Message Format (IMF), a syntax for text messages that are sent between computer users, within the framework of "electronic mail" messages. This specification is a revision of Request For Comments (RFC) 2822, which itself superseded Request For Comments (RFC) 822, "Standard for the Format of ARPA Internet Text Messages", updating it to reflect current practice and incorporating incremental changes that were specified in other RFCs. {[}STANDARDS-TRACK{]}},
+}
 
+@misc{rfc1939,
+	series =	{Request for Comments},
+	number =	1939,
+	howpublished =	{RFC 1939},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC1939},
+	url =		{https://rfc-editor.org/rfc/rfc1939.txt},
+  author =	{Dr. Marshall T. Rose and John G. Myers},
+	title =		{{Post Office Protocol - Version 3}},
+	pagetotal =	23,
+	year =		1996,
+	month =		may,
+	abstract =	{The Post Office Protocol - Version 3 (POP3) is intended to permit a workstation to dynamically access a maildrop on a server host in a useful fashion. {[}STANDARDS-TRACK{]}},
+}
+
+@misc{rfc5321,
+	series =	{Request for Comments},
+	number =	5321,
+	howpublished =	{RFC 5321},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC5321},
+	url =		{https://rfc-editor.org/rfc/rfc5321.txt},
+        author =	{Dr. John C. Klensin},
+	title =		{{Simple Mail Transfer Protocol}},
+	pagetotal =	95,
+	year =		2008,
+	month =		oct,
+	abstract =	{This document is a specification of the basic protocol for Internet electronic mail transport. It consolidates, updates, and clarifies several previous documents, making all or parts of most of them obsolete. It covers the SMTP extension mechanisms and best practices for the contemporary Internet, but does not provide details about particular extensions. Although SMTP was designed as a mail transport and delivery protocol, this specification also contains information that is important to its use as a "mail submission" protocol for "split-UA" (User Agent) mail reading systems and mobile environments. {[}STANDARDS-TRACK{]}},
+}
+
+@misc{rfc4551,
+	series =	{Request for Comments},
+	number =	4551,
+	howpublished =	{RFC 4551},
+	publisher =	{RFC Editor},
+	doi =		{10.17487/RFC4551},
+	url =		{https://rfc-editor.org/rfc/rfc4551.txt},
+        author =	{Steve Hole and Alexey Melnikov},
+	title =		{{IMAP Extension for Conditional STORE Operation or Quick Flag Changes Resynchronization}},
+	pagetotal =	25,
+	year =		2006,
+	month =		jun,
+	abstract =	{Often, multiple IMAP (RFC 3501) clients need to coordinate changes to a common IMAP mailbox. Examples include different clients working on behalf of the same user, and multiple users accessing shared mailboxes. These clients need a mechanism to synchronize state changes for messages within the mailbox. They must be able to guarantee that only one client can change message state (e.g., message flags) at any time. An example of such an application is use of an IMAP mailbox as a message queue with multiple dequeueing clients. The Conditional Store facility provides a protected update mechanism for message state information that can detect and resolve conflicts between multiple writing mail clients. The Conditional Store facility also allows a client to quickly resynchronize mailbox flag changes. This document defines an extension to IMAP (RFC 3501). {[}STANDARDS-TRACK{]}},
+}
 
 // XMPP
 @misc{rfc3920,
