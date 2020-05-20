@@ -1,6 +1,22 @@
 <h2>
   <p align="center">
-    Proof-of-Payment Token Authorization Framework
+    Cashweb Specification
+  </p>
+</h2>
+
+<p align="center">
+  CashWeb is an open messaging protocol for machine-to-machine and person-to-person communication. It uses a federated network topology, similar to XMPP and SMTP, to provide its scaling characteristics. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
+</p>
+
+<p align="center">
+  <a href="/cashweb/whitepaper.pdf">
+    Whitepaper
+  </a>
+</p>
+
+<h2>
+  <p align="center">
+  Proof-of-Payment Token Authorization Framework
   </p>
 </h2>
 
