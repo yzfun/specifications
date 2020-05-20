@@ -29,8 +29,7 @@
 \author{
   Shammah Chancellor \\
   \texttt{shammah.chancellor@cashweb.io} \\
-  %% examples of more authors
-   \And
+  \And
   Harry Barber \\
   \texttt{harry.barber@cashweb.io} \\
 }
@@ -43,9 +42,9 @@ CashWeb is an open messaging protocol for machine-to-machine and person-to-perso
 \end{abstract}
 
 \section{Introduction}
-Many early adopters of the internet saw it as a platform for inexpensive, and fast,  sharing of new ideas. Systems like Usenet, Email, and XMPP were envisioned as de-centralized platforms for this purpose. However, due to the economics of network messaging, the cost of processing messages are placed on the recipient in terms of processing power, storage, and recipient attention. We are increasingly relying on on centralized systems to identify and filter these messages.
+Many early adopters of the internet saw it as a platform for inexpensive, and fast, sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose. However, due to the economics of network messaging, the cost of processing messages are placed on the recipient in terms of processing power, storage, and recipient attention. We are increasingly relying on centralized systems to identify and filter these messages.
 
-However, in exchange for convenience and moderation, users have delegated authority over their online identities and communications to third parties. This has resulted in a loss of their privacy and control over their identities. The CashWeb messaging system seeks to restore these rights to end users by providing convenience through trustless mechanisms. 
+However, in exchange for convenience and moderation, users have delegated authority over their online identities and communications to third parties. This has resulted in a loss of their privacy and control over their identities. The CashWeb messaging system seeks to restore these rights to end-users by providing convenience through trustless mechanisms. 
 
 \section{Motivation}
 
@@ -63,7 +62,7 @@ Ironically, companies that users actively do business with are sending more "opt
 
 As a result of Spam, much of our high-value communications with personal acquaintances have moved to other digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. However, in order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account.
 
-If a "user" starts producing too much unwanted content on these systems, the account is restricted or delete, and the pinned phone number or email address is permanently banned. These identifiers are difficult to obtain due to the restrictions around sign-ups placed by email providers, and the cost associated with purchasing a phone number.
+If a "user" starts producing too much-unwanted content on these systems, the account is restricted or delete, and the pinned phone number or email address is permanently banned. These identifiers are difficult to obtain due to the restrictions around sign-ups placed by email providers, and the cost associated with purchasing a phone number.
 
 \subsubsection{Address Management}
 
@@ -77,13 +76,13 @@ Our important correspondences (e.g. Bills, Pay statements, Second-factor authent
 
 Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity.
 
-Now, loss of access to our email has become a life altering event with significant consequences. Such a loss may result due to a compromised password, or a judgement by the provider. 
+Now, loss of access to our email has become a life-altering event with significant consequences. Such a loss may result due to a compromised password, or a judgement by the provider. 
 
 Additionally, should we want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable.
 
 \subsection{Loss of Privacy}
 
-Centralized providers must generate revenue to maintain their infrastructure and generate a profit. However, many users when offered a free product vs one that costs money opt for free services. As such, many of these services provide access to email for free in return for the ability to advertise to the user in a controlled way. When compared to the deluge of spam users would otherwise receive, this is an acceptable trade off.
+Centralized providers must generate revenue to maintain their infrastructure and generate a profit. However, many users when offered a free product vs one that costs money opt for free services. As such, many of these services provide access to email for free in return for the ability to advertise to the user in a controlled way. When compared to the deluge of spam users would otherwise receive, this is an acceptable trade-off.
 
 The product these companies offer is not actually email, but marketing access to other businesses. In order to provide the best possible product, they use the email contents in order to generate digital profiles for users which are then used to pair us with advertisements. This in turn allows for higher profit margins.
 
@@ -102,7 +101,7 @@ In order to provide an alternative to the system.
 
 \begin{itemize}
 \item Ease of use -- 
-In order to support the needs of non-technical users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third party providers which provide hosting, and operation, of various services.
+In order to support the needs of non-technical users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third-party providers which provide hosting, and operation, of various services.
 \item Ability to Migrate -- 
 Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions.
 \item Identity recovery -- In the case of a loss of identity, it must be possible to recover gracefully.
@@ -167,14 +166,14 @@ It is also within the realm of possibility to advertise a URLs for DApps. This w
 Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
 \subsection{Messaging Client}
-An end user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,   update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
+An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,   update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
 The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
 \section{Conclusion}
-The CashWeb protocols aim to be censorship resistant, like the underlying cryptocurrency technology. Attaching payments to P2P communications enables the decentralization of existing power structures, and removing the control that intermediaries have over humans talk to one another. This mechanism, originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing in participating in global dialog. This is a critical step forward, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate with one another and think.
+The CashWeb protocols aim to be censorship-resistant, like the underlying cryptocurrency technology. Attaching payments to P2P communications enables the decentralization of existing power structures, and removing the control that intermediaries have over humans talk to one another. This mechanism, originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing in participating in global dialog. This is a critical step forward, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate with one another and think.
 
 \cite{nakamoto2008bpp}
 
