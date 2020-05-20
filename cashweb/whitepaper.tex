@@ -42,21 +42,32 @@ CashWeb is an open messaging protocol for machine-to-machine and person-to-perso
 \end{abstract}
 
 \section{Introduction}
-Many early adopters of the internet saw it as a platform for inexpensive, and fast, sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose. However, due to the economics of network messaging, the cost of processing messages are placed on the recipient in terms of processing power, storage, and recipient attention. We are increasingly relying on centralized systems to identify and filter these messages.
 
-However, in exchange for convenience and moderation, users have delegated authority over their online identities and communications to third parties. This has resulted in a loss of their privacy and control over their identities. The CashWeb messaging system seeks to restore these rights to end-users by providing convenience through trustless mechanisms. 
+Many early adopters of the internet saw it as a platform for inexpensive, and fast, sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose. 
 
-\section{Motivation}
+% Explain how users had rights here and how it was good
+% Slower run up to it all collapsing rather than jumping in - we can pace it like a epic film here
 
-The design of the CashWeb protocol is centered around restoring user authority over their internet identities, and privacy. However, the rights associated with this authority were not taken away from users, rather they were freely due to inconvenience with attempting to maintain their rights. They were handed over to centralized platforms for reasons of convenience. As such, the sources which drove users to use centralized platforms, and how this results in loss of privacy and rights.
+However, due to the economics of network messaging, the cost of processing messages is placed on the recipient in terms of processing power, storage, and recipient attention. We are increasingly relying on centralized systems to identify and filter these messages. 
 
-Two major inconveniences have driven internet users to voluntarily turn over their privacy and identities management. These inconveniences are identifying important communications amongst unsolicited marketing advertisements, and maintaining the address where they receive communications.
+% Expand this here, maybe cite some statistics on it maybe. Don't want to exhaust reader when we repeat below.
 
-\subsection{Inconveniences}
+Eventually, users delegated authority over their online identities and communications to third-parties in exchange for convenience. This has resulted in a loss of their privacy and control over their identities.
+
+% Cite statistics here on how centralized and awful things are. Again, don't go into too much detail to avoid exhaustion.
+
+This authority was not taken by force, rather it was given freely to centralized platforms in exchange for convenience.
+
+% This needs to be fixed
+Two major inconveniences which have driven internet users to abandon their rights are: identifying important communications amongst unsolicited marketing advertisements, and maintaining the address where they receive communications. The design of the CashWeb protocol is centered around restoring user authority over their digital identities and privacy.
+
+\section{Why did we Centralize?}
+
+% More statistics on how centralized we are right now here to smooth the transition here
 
 \subsubsection{Spam}
 
-While email was envisioned as a person-to-person and machine-to-machine messaging system, the vast majority of emails are now machine-to-human. These messages largely consist of useless advertisements, but require processing power and human attention to evaluate and identify for deletion. Large-scale centralized email providers (e.g. Gmail and Hotmail) benefit from their message volume by being able to identify similar messages sent to a large number of different customers and filter them out.
+While email was envisioned as a person-to-person and machine-to-machine messaging system, the vast majority of emails are now machine-to-human. These messages largely consist of useless advertisements, but require processing power and human attention to evaluate and identify for deletion. Large-scale centralized email providers (e.g. Gmail\footnote{\url{https://mail.google.com}} and Hotmail\footnote{\url{https://outlook.live.com}}) benefit from their message volume by being able to identify similar messages sent to a large number of different customers and filter them out.
 
 Ironically, companies that users actively do business with are sending more "opt-in" marketing messages. These are largely served unfiltered by these centralized platforms. Despite the original promise of these platforms to provide users with only high-value communications. Email has largely become a historical record for our business notifications.
 
@@ -70,7 +81,9 @@ In the early days of the internet, internet service providers (ISPs) also offere
 
 Our important correspondences (e.g. Bills, Pay statements, Second-factor authentication) have moved to email. The need to provide all these services with a new email address is a major inconvenience. In order to avoid this inconvenience, many internet users have opted to have email addresses with providers which were independent from their ISPs.
 
-\section{Undesirable Consequences from Centralization} 
+\section{Consequences of Centralization}
+
+% State that the grass is not greener, trade-off was taken where now the users are hostage etc
 
 \subsection{Loss of Identity}
 
@@ -93,11 +106,14 @@ Again, in non-email systems, our identity is increasingly tied to our email or p
 Indeed, various companies purchase data across multiple services, and collate it based on emails and phone numbers. Devices fingerprinting is also employed to combine this data with your web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
 
 The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
+
 \section{Requirements}
 
 \subsection{Functional Requirements}
 
 In order to provide an alternative to the system.
+
+% Maybe these should be subsubsections
 
 \begin{itemize}
 \item Ease of use -- 
@@ -110,6 +126,8 @@ Users of the CashWeb system must have control over access to their own identitie
 \end{itemize}
 
 \subsection{Technical Requirements}
+
+% Maybe these should be subsubsections
 
 \begin{itemize}
 \item Public key based identification -- In order to make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers.
@@ -126,9 +144,15 @@ Several other items have been given special consideration in the design of the C
 \end{itemize}
 
 \section{Design Decisions}
+
+% Hesistate to structure it like this. Problem -> Design decision -> Feature
+% We don't need to involve the reader in the decision making process - everyone thinks they know better so it may seed doubt here.
+% It might be better to do feature -> why it's a solution to problem, because we've packed the intro with problems. It should also be more concise and snappy that way.
+
 In order to meet the above requirements for the CashWeb system, the following design decisions were made.
 
 \subsection{Cryptocurrency}
+
 One of the central concerns of the CashWeb system is that the cost of messaging be imposed upon the sender. In order to support this requirement, payments need to be at the center of the design.
 
 Traditional systems require trusted third parties and complex integrations with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
@@ -140,6 +164,7 @@ Thus,  Bitcoin Cash was selected due to its roadmap being highly compatible with
 Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same key used to send and receive funds can also be used to provide encryption for messages.
 
 \subsection{Identity}
+
 Each user identity is pseudonymous, and associated with a public key.  These public identities can be easily an inexpensively generated from a single master key. Each identity key is acknowledged by the network via various small payments to the miners of the Bitcoin Cash network which include a cryptographically verifiable commitment to the identity.
 
 Additionally, these pseudonyms can be made such that they can be proven to have been derived from another hidden key at a later date. Such proofs enable the specific key associated with a pseudonym to be revoked, and rotated, in a trustless way. This enables the contacts of the pseudonym to be informed without the need for re-establishing trust.
@@ -147,11 +172,13 @@ Additionally, these pseudonyms can be made such that they can be proven to have 
 The specific details of these identity schemes are left to further detailed protocol specifications, and the protocol is extensible to future schemes should a need arise.
 
 \subsection{Message Format}
+
 There are two major open protocols for messaging: XMPP and SMTP/Internet Message Format. Both of these systems were developer without end-to-end encryption in mind, and as such have significant drawbacks which would require workarounds. Additionally, the formats are  pragmatically difficult to interact with -- requiring complex client libraries.
 
 Instead of using either of these messaging formats, the CashWeb system uses protobufs. Protobufs are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
 \subsection{Keyservers}
+
 The CashWeb protocol includes a set of keyservers which provide a cryptographically secure shared-everything key-value store. The store is intended to track small amounts of information associated with cryptographic keys. Each record is recorded by a hash of a public key. The payloads then include the public key, an array of metadata about the public key, and a signature attesting that the record was produced by a user controlling the associated public key.
 
 The choice to use a specialized keyserver, over existing GPG infrastructure, is to build in anti-DDoS mechanisms from the start. Keys are updated based on the ability to sign messages associated with a public key's record. Additionally, the protocol is based on HTTP2 which makes it significantly simpler to interact with, to live behind off-the-shelf load balancers. Additionally, the payload format is simpler than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
@@ -163,9 +190,11 @@ Another possible functionality would be revocations of keys in the event that yo
 It is also within the realm of possibility to advertise a URLs for DApps. This would enable downloading Dapps into the wallet, running them in a secure VM.
 
 \subsection{Relay Servers}
+
 Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
 \subsection{Messaging Client}
+
 An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,   update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
 The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
@@ -173,6 +202,7 @@ The messaging clients are the most complex portion of the CashWeb system. The ma
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
 \section{Conclusion}
+
 The CashWeb protocols aim to be censorship-resistant, like the underlying cryptocurrency technology. Attaching payments to P2P communications enables the decentralization of existing power structures, and removing the control that intermediaries have over humans talk to one another. This mechanism, originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing in participating in global dialog. This is a critical step forward, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate with one another and think.
 
 \cite{nakamoto2008bpp}
