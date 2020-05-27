@@ -158,22 +158,6 @@ It is RECOMMENDED that the keyserver maintains a peer list of other keyservers o
 
 The list of peers SHOULD be retrievable via the GET requests to the <code>/peers</code> endpoint. The keyserver MUST respond with a serialized <code>Peers</code> message and status code <code>200</code>, status code <code>501</code> and an empty body if peering is not supported, or status code <code>500</code> on an internal database failure.
 
-=== Getting Metadata ===
-
-To get metadata the client MUST send a GET request to <code>/keys/{addr}</code> with an empty body.
-
-The keyserver MUST then perform the following steps:
-
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
-#* Both base58 and cashaddr address formats MUST be supported.
-#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Lookup the public key hash using an internal database then respond with status code <code>200</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
-#* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
-#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
-#* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
-
-Note that this means requests using different encodings of the same underlying pay-to-pubkey-hash address MUST retrieve the same metadata.
-
 === Proof-of-Payment Authorization ===
 
 Before putting metadata to the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
@@ -197,6 +181,22 @@ The keyserver MUST continue to follow the POP protocol with following the additi
 
 Note that clients may opt to completely skip this step by broadcasting the transaction and constructing the POP token themselves.
 
+=== Getting Metadata ===
+
+To get metadata the client MUST send a GET request to <code>/keys/{addr}</code> with an empty body.
+
+The keyserver MUST then perform the following steps:
+
+# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Lookup the public key hash using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
+#* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
+#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
+#* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
+
+Note that this means requests using different encodings of the same underlying pay-to-pubkey-hash address MUST retrieve the same metadata.
+
 === Putting Metadata ===
 
 To upload metadata the client MUST send a PUT request to <code>/keys/{addr}</code> with the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
@@ -218,7 +218,7 @@ The keyserver MUST then perform the following steps:
 
 == Peer-to-Peer Specification ==
 
-It is RECOMMENDED that keyservers communicate between each other to provide replication, we RECOMMEND a simple peer-to-peer gossip protocol built atop of the existing REST API.
+Given that metadata is only replaced by metadata with a later timestamp each individual address will only progress towards the latest metadata entry when following the protocol. While this alone does not garauntee eventual consistency it does provide conflict resolution allowing us to build various replication schemes.
 
 === Push Gossip ===
 
@@ -228,7 +228,9 @@ It is RECOMMENDED that implementations wait for the commitment to enjoy at least
 
 === Pull Gossip ===
 
+It is RECOMMENDED on metadata GET requests, before serving the request, the keyserver forwards the request to a sample of its peers, and uses the token in the <code>Authorization</code> header in order to update its own metadata at that address by following the standard PUT request protocol. This can be seen as a form of pull gossip where the pull is triggered by a client GET.
 
+In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this forwarding is controlled via the <code>Max-Forwards</code> header. That is, when receiving a GET request from the client, the keyserver first checks whether <code>Max-Forwards</code> is set to <code>1</code>, and if so the sample requests won't be sent.
 
 == Footnotes ==
 
