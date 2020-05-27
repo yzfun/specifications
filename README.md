@@ -11,10 +11,8 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
 <p align="center">
   <a href="/proof-of-payment-token/specification.mediawiki">
     Specification
-  </a> | <a href="/proof-of-payment-token/wrapper.proto">
-    Authorization Wrapper Schema
-  </a> | <a href="/proof-of-payment-token/wrapper.proto">
-    Metadata Schema
+  </a> | <a href="https://github.com/cashweb/pop-proto">
+    Protobuf Schema
   </a>
 </p>
 
@@ -31,7 +29,9 @@ The keyserver protocol allows public, Denial-of-Service resistant, cryptographic
 <p align="center">
   <a href="/keyserver-protocol/specification.mediawiki">
     Specification
-  </a> | <a href="https://github.com/cashweb/keyserver-proto">
-    Protobuf Schema
+  </a> | <a href="/keyserver-protocol/wrapper.proto">
+    Authorization Wrapper Protobuf Schema
+  </a> | <a href="/keyserver-protocol/keyserver.proto">
+    Keyserver Protobuf Schema
   </a>
 </p>
