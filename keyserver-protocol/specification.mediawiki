@@ -31,7 +31,7 @@ Traditional keyservers are subject to certificate spamming attacks. By being a f
 
 === Bitcoin Network ===
 
-Bitcoin has three standard networks: mainnet, testnet and regtest. The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
+Bitcoin has three standard networks: "mainnet", "testnet" and "regtest". The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
 
 We segregate operation like this to reduce confusion and provides testbeds.
 
@@ -178,13 +178,13 @@ Note that this means requests using different encodings of the same underlying p
 
 Before putting metadata to the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
 
-To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|HMAC-SHA256]] digest of the concatenation of the public key hash associated with the desired PUT address and the serialized <code>AddressMetadata</code>.
+To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the concatenation of the public key hash associated with the desired PUT address and the SHA256 of the serialized <code>AddressMetadata</code>.
 
-<pre>metadata commitment = HMAC-SHA256(public key hash, address metadata)</pre>
+<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
 
 This initial request acts as the "authorization request" in the POP token protocol.
 
-On receiving such a request the keyserver MUST check whether digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
+On receiving such a request the keyserver MUST check whether the digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
 
 The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
 
@@ -207,24 +207,28 @@ The keyserver MUST then perform the following steps:
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressNetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# The REQUIRED POP token validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then comparing it to digest of the reported public key hash and serialized <code>AddressMetadata</code>.
+# Check that the <code>timestamp</code> field of the <code>AddressMetadata</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then comparing it to digest of the reported public key hash and serialized <code>AddressMetadata</code>.
 #* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # If the an existing <code>AddressMetadata</code> message exists at the public key hash of the internal database then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# The keyserver MUST insert the new <code>AuthWrapper</code> into internal database at key given by the public key hash. 
+# The keyserver MUST insert the new <code>AuthWrapper</code> into the internal database at key given by the public key hash. 
 # Return status code <code>200</code>.
 
 == Peer-to-Peer Specification ==
 
-It is RECOMMENDED that keyservers communicate between each other to provide replication, we propose a simple peer-to-peer gossip protocol built atop of the existing REST API.
+It is RECOMMENDED that keyservers communicate between each other to provide replication, we RECOMMEND a simple peer-to-peer gossip protocol built atop of the existing REST API.
 
 === Push Gossip ===
 
 The keyserver MUST allow metadata to be PUT to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment and therefore after accepting new metadata one is able to PUT to their peers. 
 
 It is RECOMMENDED that implementations wait for the commitment to enjoy at least two confirmations before broadcasting it to their peers, and else cache the POP token until that time. Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers. Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparate keyservers have a common agreement on the existence of the transaction containing the metadata commitment.
+
+=== Pull Gossip ===
+
+
 
 == Footnotes ==
 
