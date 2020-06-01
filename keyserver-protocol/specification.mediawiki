@@ -186,7 +186,7 @@ To get metadata the client MUST send a GET request to <code>/keys/{address}</cod
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the Bitcoin address given in the URL. If the address is a valid address then decode it returning the address payload.
+# Validate and decode the <code>address</code> given in the URL, returning the address payload.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Lookup the address payload <code>AuthWrapper</code> containing the <code>AddressMetadata</code>, then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code>.
@@ -202,7 +202,7 @@ To upload metadata the client MUST send a PUT request to <code>/keys/{target add
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the target address. If the address is a valid address then decode it returning the underlying address payload. 
+# Validate and decode the <code>target address</code> given in the URL, returning the address payload. 
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressMetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
@@ -235,7 +235,7 @@ The keyserver SHOULD only perform this sample if one of the two conditions are m
 * The metadata is missing at the requested address
 * The summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> are greater than the current unix time in milliseconds.
 
-In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is prevented by the presence of a <code>Sample-Peers</code> header with value set to <code>"false"</code>.
+In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is prevented by the presence of a <code>Sample-Peers</code> header with value set to <code>false</code>.
 
 == Footnotes ==
 
