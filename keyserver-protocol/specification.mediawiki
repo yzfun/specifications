@@ -162,17 +162,26 @@ The list of peers SHOULD be retrievable via the GET requests to the <code>/peers
 
 Before putting metadata to the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
 
-To initiate the payment process the client MUST first send a PUT request to <code>/commit</code> with body containing a "metadata commitment". This is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the concatenation of the public key hash associated with the desired PUT address and the SHA256 of the serialized <code>AddressMetadata</code>.
+To initiate the payment process the client MUST first send a POST request to <code>/commit</code> with JSON body of the following
 
-<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
+<pre>
+{
+    "address": { address },
+    "metadata_digest": { metadata digest }
+}
+</pre>
+
+where the <code>address</code> is the target address and the <code>metadata digest</code> is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the serialized <code>AddressMetadata</code>.
+
+On receiving such a request the keyserver MUST check whether the digest given is 32 bytes long and whether the address is a valid Bitcoin address, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body. Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
 
 This initial request acts as the "authorization request" in the POP token protocol.
 
-On receiving such a request the keyserver MUST check whether the digest given is 32 bytes long, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
+The metadata commitment is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the concatenation of the public key hash associated with the target address and the SHA256 of the serialized <code>AddressMetadata</code>.
+
+<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
 
 The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
-
-Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
 
 The keyserver MUST continue to follow the POP protocol with following the additions:
 
