@@ -228,9 +228,14 @@ It is RECOMMENDED that implementations wait for the commitment to enjoy at least
 
 === Pull Gossip ===
 
-It is RECOMMENDED on metadata GET requests, before serving the request, the keyserver forwards the request to a sample of its peers, and uses the token in the <code>Authorization</code> header in order to update its own metadata at that address by following the standard PUT request protocol. This can be seen as a form of pull gossip where the pull is triggered by a client GET.
+It is RECOMMENDED on metadata GET requests, before serving the request, the keyserver forwards the request to a sample of its peers, and uses the token in the <code>Authorization</code> header in order to update its own metadata at that address by following the standard PUT request protocol. This can be seen as a form of pull gossip triggered by a client GET.
 
-In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is controlled via the <code>Sample-Peers</code> header. That is, when receiving a GET request from the client, the keyserver first checks whether <code>Sample-Peers</code> is set to <code>false</code>, and if so the sample requests won't be sent.
+The keyserver SHOULD only perform this sample if one of the two conditions are met:
+
+* The metadata is missing at the requested address
+* The summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> are greater than the current unix time in milliseconds.
+
+In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is prevented by the presence of a <code>Sample-Peers</code> header with value set to <code>"false"</code>.
 
 == Footnotes ==
 
