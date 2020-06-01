@@ -143,7 +143,7 @@ The keyserver MUST provide the following endpoints:
 
 It is RECOMMENDED that the keyserver maintains a peer list of other keyservers on the network. This provides a way for clients to retrieve more keyservers to sample from and for keyservers to replicate data across multiple machines. More information concerning the peer-to-peer keyserver protocol can be found in the [[#Peer-to-Peer Specification|Peer-to-Peer Specification]] section below.
 
-The list of peers SHOULD be retrievable via the GET requests to the <code>/peers</code> endpoint. The keyserver MUST respond with a serialized <code>Peers</code> message and status code <code>200</code>, status code <code>501</code> and an empty body if peering is not supported, or status code <code>500</code> on an internal database failure.
+The list of peers SHOULD be retrievable via the GET requests to the <code>/peers</code> endpoint. The keyserver MUST respond with a serialized <code>Peers</code> message and status code <code>200</code>, status code <code>501</code> and an empty body if peering is not supported, or status code <code>500</code> on an internal failure.
 
 === Proof-of-Payment Authorization ===
 
@@ -189,10 +189,10 @@ The keyserver MUST then perform the following steps:
 # Validate and decode the Bitcoin address given in the URL. If the address is a valid address then decode it returning the address payload.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Lookup the address payload using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
+# Lookup the address payload <code>AuthWrapper</code> containing the <code>AddressMetadata</code>, then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code>.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
 #* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time in milliseconds then the keyserver MUST respond with status code <code>404</code>.
-#* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
+#* On an internal failure the keyserver MUST respond with status code <code>500</code>.
 
 Note that this means requests using different encodings of the same underlying address payload MUST retrieve the same metadata.
 
@@ -212,8 +212,8 @@ The keyserver MUST then perform the following steps:
 #* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>AddressMetadata</code> message exists at the address payload of the internal database then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# The keyserver MUST insert the new <code>AuthWrapper</code> into the internal database at key given by the address payload. 
+# If the an existing <code>AddressMetadata</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# The keyserver MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
 # Return status code <code>200</code>.
 
 == Peer-to-Peer Specification ==
