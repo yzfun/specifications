@@ -59,15 +59,15 @@ message Entry {
 
 // AddressMetadata is the user-specified data that is covered by the users signature.
 message AddressMetadata {
-    // Timestamp allows servers to determine which version of the data is the most recent.
+    // Timestamp allows servers to determine which version of the data is the most recent. Given in milliseconds.
     int64 timestamp = 1;
-    // TTL tells us how long this entry should exist before being considered invalid.
+    // TTL tells us how long this entry should exist before being considered invalid. Given in milliseconds.
     int64 ttl = 2;
     // User specified data.  Presumably some conventional data determined by wallet authors.
     repeated Entry entries = 3;
 }
 
-// Peer represents a single live peer.
+// Peer represents a single peer.
 message Peer {
     // The URL pointing to the root of the keyserver REST API.
     string url = 1;
@@ -191,7 +191,7 @@ The keyserver MUST then perform the following steps:
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Lookup the address payload using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
-#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
+#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time in milliseconds then the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
 
 Note that this means requests using different encodings of the same underlying address payload MUST retrieve the same metadata.
