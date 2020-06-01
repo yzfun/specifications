@@ -230,7 +230,7 @@ It is RECOMMENDED that implementations wait for the commitment to enjoy at least
 
 It is RECOMMENDED on metadata GET requests, before serving the request, the keyserver forwards the request to a sample of its peers, and uses the token in the <code>Authorization</code> header in order to update its own metadata at that address by following the standard PUT request protocol. This can be seen as a form of pull gossip where the pull is triggered by a client GET.
 
-In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this forwarding is controlled via the <code>Max-Forwards</code> header. That is, when receiving a GET request from the client, the keyserver first checks whether <code>Max-Forwards</code> is set to <code>1</code>, and if so the sample requests won't be sent.
+In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is controlled via the <code>Sample-Peers</code> header. That is, when receiving a GET request from the client, the keyserver first checks whether <code>Sample-Peers</code> is set to <code>false</code>, and if so the sample requests won't be sent.
 
 == Footnotes ==
 
