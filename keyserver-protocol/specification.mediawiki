@@ -29,9 +29,9 @@ Traditional keyservers are subject to certificate spamming attacks. By being a f
 
 == Overview ==
 
-=== Public Key Hash ===
+=== Address Payload ===
 
-Throughout this specification, the use of "public key hash" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses where the <code>public key</code> is a compressed public key.
+Throughout this specification, the use of "address payload" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses where the <code>public key</code> is a compressed public key.
 
 === Keyserver Messages ===
 
@@ -122,14 +122,14 @@ The keyserver MUST provide the following endpoints:
 | Initiate the purchase of a POP token
 | None
 |-
-| /keys/{addr}
+| /keys/{address}
 | GET
-| Get metadata from store
+| Get metadata from an address
 | None
 |-
-| /keys/{addr}
+| /keys/{address}
 | PUT
-| Put metadata to store
+| Put metadata to an address
 | Requires POP token
 |-
 | /peers
@@ -164,9 +164,9 @@ On receiving such a request the keyserver MUST check whether the digest given is
 
 This initial request acts as the "authorization request" in the POP token protocol.
 
-The metadata commitment is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the concatenation of the public key hash associated with the target address and the SHA256 of the serialized <code>AddressMetadata</code>.
+The metadata commitment is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the concatenation of the payload of the target address and the SHA256 of the serialized <code>AddressMetadata</code>.
 
-<pre>metadata commitment = SHA256(public key hash || SHA256(address metadata))</pre>
+<pre>metadata commitment = SHA256(address payload || SHA256(address metadata))</pre>
 
 The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
 
@@ -179,37 +179,38 @@ Note that clients may opt to completely skip this step by broadcasting the trans
 
 === Getting Metadata ===
 
-To get metadata the client MUST send a GET request to <code>/keys/{addr}</code> with an empty body.
+To get metadata the client MUST send a GET request to <code>/keys/{address}</code> with an empty body.
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid address then decode it returning the underlying public key hash.
+# Validate and decode the Bitcoin address given in the URL. If the address is a valid address then decode it returning the address payload.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Lookup the public key hash using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
+# Lookup the address payload using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
 #* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
 #* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
 
-Note that this means requests using different encodings of the same underlying public key hash MUST retrieve the same metadata.
+Note that this means requests using different encodings of the same underlying address payload MUST retrieve the same metadata.
 
 === Putting Metadata ===
 
-To upload metadata the client MUST send a PUT request to <code>/keys/{addr}</code> with the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
+To upload metadata the client MUST send a PUT request to <code>/keys/{target address}</code> with the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid address then decode it returning the underlying public key hash.
+# Validate and decode the target address. If the address is a valid address then decode it returning the underlying address payload. 
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressNetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressMetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>public_key</code> field of the <code>AddressMetadata</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>AddressMetadata</code> and the target address's payload.
 # Check that the <code>timestamp</code> field of the <code>AddressMetadata</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then comparing it to digest of the reported public key hash and serialized <code>AddressMetadata</code>.
 #* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>AddressMetadata</code> message exists at the public key hash of the internal database then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# The keyserver MUST insert the new <code>AuthWrapper</code> into the internal database at key given by the public key hash. 
+# If the an existing <code>AddressMetadata</code> message exists at the address payload of the internal database then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# The keyserver MUST insert the new <code>AuthWrapper</code> into the internal database at key given by the address payload. 
 # Return status code <code>200</code>.
 
 == Peer-to-Peer Specification ==
@@ -218,7 +219,7 @@ Given that metadata is only replaced by metadata with a later timestamp each ind
 
 === Push Gossip ===
 
-The keyserver MUST allow metadata to be PUT to <code>/keys/{addr}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment and therefore after accepting new metadata one is able to PUT to their peers. 
+The keyserver MUST allow metadata to be PUT to <code>/keys/{target address}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment and therefore after accepting new metadata one is able to PUT to their peers.
 
 It is RECOMMENDED that implementations wait for the commitment to enjoy at least two confirmations before broadcasting it to their peers, and else cache the POP token until that time. Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers. Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparate keyservers have a common agreement on the existence of the transaction containing the metadata commitment.
 
