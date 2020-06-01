@@ -29,12 +29,6 @@ Traditional keyservers are subject to certificate spamming attacks. By being a f
 
 == Overview ==
 
-=== Bitcoin Network ===
-
-Bitcoin has three standard networks: "mainnet", "testnet" and "regtest". The keyserver MUST operate in correspondence with one of these three. For example, if a keyserver is running in mainnet mode it MUST reject testnet and regtest net addresses as invalid and be connected to a mainnet Bitcoin node.
-
-We segregate operation like this to reduce confusion and provides testbeds.
-
 === Public Key Hash ===
 
 Throughout this specification, the use of "public key hash" refers specificaly to
