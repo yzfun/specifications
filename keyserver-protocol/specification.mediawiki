@@ -1,0 +1,247 @@
+<pre>
+  Title: Keyserver Protocol
+  Author: Shammah Chancellor <shammah.chancellor@cashweb.io>
+          Harry Barber <harry.barber@cashweb.io>
+  Status: Draft
+  Created: 2019-11-15
+  License: MIT
+</pre>
+
+== Introduction ==
+
+=== Abstract ===
+
+The keyserver protocol allows public, Denial-of-Service resistant, cryptographically verifiable, replicated storage of <code>address:metadata</code> pairs. We describe a sufficient specification of the REST API and peer-to-peer protocol.
+
+=== Notational Conventions ===
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]].
+
+The rule URI-reference is included from [[https://tools.ietf.org/html/rfc3986|Uniform Resource Identifier (URI): Generic Syntax]].
+
+Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
+
+Unless otherwise noted, all the protocol parameter names and values are case sensitive.
+
+=== Motivation ===
+
+Traditional keyservers are subject to certificate spamming attacks. By being a first-class citizen in the cryptocurrency ecosystem, we are able to charge for key updates. This prevents an explosion of advertised certificates, and provides some funding for node operators. Other systems like OpenAlias, require that you trust the service provider is providing the correct addresses, while this keyserver cannot forge such updates as they are tied to a keyid which has been provided via another channel. At most, a malicious keyserver can censor a particular key, in which case other keyservers will provide it.
+
+== Overview ==
+
+=== Address Payload ===
+
+Throughout this specification, the use of "address payload" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses where the <code>public key</code> is a compressed public key.
+
+=== Keyserver Messages ===
+
+The messages specific to the keyserver protocol are defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
+
+<pre>
+syntax = "proto3";
+package keyserver;
+
+// Basic key/value used to store header data.
+message Header {
+    string name = 1;
+    string value = 2;
+}
+
+// Entry is an individual piece of structured data provided by wallet authors.
+message Entry {
+    // Kind is a hint to wallets as to what type of data to deserialize from the metadata field.
+    string kind = 1;
+    // The headers is excess metadata that may be useful to a wallet.
+    repeated Header headers = 2;
+    // Body of the metadata field.
+    bytes entry_data = 3;
+}
+
+// AddressMetadata is the user-specified data that is covered by the users signature.
+message AddressMetadata {
+    // Timestamp allows servers to determine which version of the data is the most recent. Given in milliseconds.
+    int64 timestamp = 1;
+    // TTL tells us how long this entry should exist before being considered invalid. Given in milliseconds.
+    int64 ttl = 2;
+    // User specified data.  Presumably some conventional data determined by wallet authors.
+    repeated Entry entries = 3;
+}
+
+// Peer represents a single peer.
+message Peer {
+    // The URL pointing to the root of the keyserver REST API.
+    string url = 1;
+}
+
+// A list of peers.
+message Peers {
+    repeated Peer peers = 1;
+}
+</pre>
+
+=== Authorization Wrapper ===
+
+The <code>AuthorizationWrapper</code> is a proto3 message allowing payloads to be covered by a ECDSA or Schnorr signature. Within the keyserver protocol the <code>AddressMetadata</code> plays the role of the payload - having the metadata GET and PUT while wrapped provides integrity, authentication, and non-repuditation.
+
+<pre>
+syntax = "proto3";
+package wrapper;
+
+message AuthWrapper {
+    // Serialized version of the public key.
+    bytes pub_key = 1;
+    // Signature is the signature of the metadata by public key.
+    bytes signature = 2;
+    // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
+    enum SignatureScheme {
+        SCHNORR = 0;
+        ECDSA = 1;
+    }
+    SignatureScheme scheme = 3;
+    // The serialized payload covered by the signature.
+    bytes serialized_payload = 4;
+}
+</pre>
+
+== REST API Specification ==
+
+The keyserver provides a REST API to allow clients and other keyservers to get and put metadata.
+
+We use the [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]] to avoid spam by requiring the client pays to commit to metadata onchain. The commitment also acts as an anchor to allow reconciliation among keyservers.
+
+The keyserver MUST provide the following endpoints:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Path
+! style="font-weight:bold;" | Method
+! style="font-weight:bold;" | Purpose
+! style="font-weight:bold;" | Protection
+|-
+| /commit
+| POST
+| Initiate the purchase of a POP token
+| None
+|-
+| /keys/{address}
+| GET
+| Get metadata from an address
+| None
+|-
+| /keys/{address}
+| PUT
+| Put metadata to an address
+| Requires POP token
+|-
+| /peers
+| GET
+| Get peer list
+| None
+|-
+|}
+
+=== Getting Peers ===
+
+It is RECOMMENDED that the keyserver maintains a peer list of other keyservers on the network. This provides a way for clients to retrieve more keyservers to sample from and for keyservers to replicate data across multiple machines. More information concerning the peer-to-peer keyserver protocol can be found in the [[#Peer-to-Peer Specification|Peer-to-Peer Specification]] section below.
+
+The list of peers SHOULD be retrievable via the GET requests to the <code>/peers</code> endpoint. The keyserver MUST respond with a serialized <code>Peers</code> message and status code <code>200</code>, status code <code>501</code> and an empty body if peering is not supported, or status code <code>500</code> on an internal failure.
+
+=== Proof-of-Payment Authorization ===
+
+Before putting metadata to a target address on the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
+
+To initiate the payment process the client MUST first send a POST request to <code>/commit</code> with JSON body of the following
+
+<pre>
+{
+    "pubkey_digest": { pubkey digest },
+    "metadata_digest": { metadata digest }
+}
+</pre>
+
+where the
+
+* <code>pubkey digest</code> is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the compressed public key, associated to the target address, in hexidecimal format,
+* <code>metadata digest</code> is the SHA256 digest of the serialized <code>AddressMetadata</code> in hexidecimal format.
+
+On receiving such a request the keyserver MUST check whether the digest given is 32 bytes long and whether the address is a valid Bitcoin address, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body. Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
+
+This initial request acts as the "authorization request" in the POP token protocol.
+
+The metadata commitment is the SHA256 digest of the concatenation of the <code>pubkey digest</code> and the SHA256 of the serialized <code>AddressMetadata</code>.
+
+<pre>metadata commitment = SHA256(SHA256(public key) || SHA256(address metadata))</pre>
+
+The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
+
+The keyserver MUST continue to follow the POP protocol with following the additions:
+
+* The <code>outputs</code> field of the <code>PaymentRequest</code> message MUST consist of an OP_RETURN output containing exactly the message commitment.
+* The POP token presented to the client MUST consist of the base64 encoding of the concatenation of the raw transaction ID and the 32-bit big-endian serialization of output index.
+
+Note that clients may opt to completely skip this step by broadcasting the transaction and constructing the POP token themselves.
+
+=== Getting Metadata ===
+
+To get metadata the client MUST send a GET request to <code>/keys/{address}</code> with an empty body.
+
+The keyserver MUST then perform the following steps:
+
+# Validate and decode the <code>address</code> given in the URL, returning the address payload.
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Lookup the address payload <code>AuthWrapper</code> containing the <code>AddressMetadata</code>, then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code>.
+#* If the metadata is not found the keyserver MUST respond with status code <code>404</code>.
+#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time in milliseconds then the keyserver MUST respond with status code <code>404</code>.
+#* On an internal failure the keyserver MUST respond with status code <code>500</code>.
+
+Note that this means requests using different encodings of the same underlying address payload MUST retrieve the same metadata.
+
+=== Putting Metadata ===
+
+To upload metadata the client MUST send a PUT request to <code>/keys/{target address}</code> with the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
+
+The keyserver MUST then perform the following steps:
+
+# Validate and decode the <code>target address</code> given in the URL, returning the address payload. 
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressMetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>public_key</code> field of the <code>AddressMetadata</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>AddressMetadata</code> and the target address's payload.
+# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
+# Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>AddressMetadata</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# The keyserver MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
+# Return status code <code>200</code>.
+
+== Peer-to-Peer Specification ==
+
+Given that metadata is only replaced by metadata with a later timestamp each individual address will only progress towards the latest metadata entry when following the protocol. While this alone does not garauntee eventual consistency it does provide conflict resolution allowing us to build various replication schemes.
+
+=== Push Gossip ===
+
+The keyserver MUST allow metadata to be PUT to <code>/keys/{target address}</code> when provided with a POP token referencing an onchain OP_RETURN containing the associated metadata commitment and therefore after accepting new metadata one is able to PUT to their peers.
+
+It is RECOMMENDED that implementations wait for the commitment to enjoy at least two confirmations before broadcasting it to their peers, and else cache the POP token until that time. Note that newer metadata SHOULD overwrite the cached values to avoid broadcasting out-of-date metadata to peers. Waiting for sufficient confirmations is RECOMMENDED here to ensure that disparate keyservers have a common agreement on the existence of the transaction containing the metadata commitment.
+
+=== Pull Gossip ===
+
+It is RECOMMENDED on metadata GET requests, before serving the request, the keyserver forwards the request to a sample of its peers, and uses the token in the <code>Authorization</code> header in order to update its own metadata at that address by following the standard PUT request protocol. This can be seen as a form of pull gossip triggered by a client GET.
+
+The keyserver SHOULD only perform this sample if one of the two conditions are met:
+
+* The metadata is missing at the requested address
+* The summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> are greater than the current unix time in milliseconds.
+
+In order to prevent an explosion of GET requests across the network it is RECOMMENDED that this sampling is prevented by the presence of a <code>Sample-Peers</code> header with value set to <code>false</code>.
+
+== Footnotes ==
+
+<references />
+
+== References ==
+* [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
+* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
