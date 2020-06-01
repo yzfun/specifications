@@ -183,7 +183,7 @@ To get metadata the client MUST send a GET request to <code>/keys/{addr}</code> 
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
+# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid address then decode it returning the underlying public key hash.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Lookup the public key hash using an internal database then respond with status code <code>200</code>, an <code>Authorization</code> header containing the <code>POP {base64 encoding of the token}</code> and the serialized <code>AuthWrapper</code> containing the <code>AddressMetadata</code>.
@@ -191,7 +191,7 @@ The keyserver MUST then perform the following steps:
 #* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time then the keyserver MUST respond with status code <code>404</code>.
 #* On an internal database failure the keyserver MUST respond with status code <code>500</code>.
 
-Note that this means requests using different encodings of the same underlying pay-to-pubkey-hash address MUST retrieve the same metadata.
+Note that this means requests using different encodings of the same underlying public key hash MUST retrieve the same metadata.
 
 === Putting Metadata ===
 
@@ -199,7 +199,7 @@ To upload metadata the client MUST send a PUT request to <code>/keys/{addr}</cod
 
 The keyserver MUST then perform the following steps:
 
-# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid pay-to-pubkey-hash address then decode it returning the underlying public key hash.
+# Validate and decode the Bitcoin address <code>addr</code>. If the address is a valid address then decode it returning the underlying public key hash.
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressNetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
