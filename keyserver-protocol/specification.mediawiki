@@ -100,6 +100,8 @@ message AuthWrapper {
     SignatureScheme scheme = 3;
     // The serialized payload covered by the signature.
     bytes serialized_payload = 4;
+    // The SHA256 digest of the serialized_payload.
+    bytes payload_digest = 5;
 }
 </pre>
 
@@ -116,11 +118,6 @@ The keyserver MUST provide the following endpoints:
 ! style="font-weight:bold;" | Method
 ! style="font-weight:bold;" | Purpose
 ! style="font-weight:bold;" | Protection
-|-
-| /commit
-| POST
-| Initiate the purchase of a POP token
-| None
 |-
 | /keys/{address}
 | GET
@@ -149,29 +146,17 @@ The list of peers SHOULD be retrievable via the GET requests to the <code>/peers
 
 Before putting metadata to a target address on the keyserver the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
 
-To initiate the payment process the client MUST first send a POST request to <code>/commit</code> with JSON body of the following
+To initiate the payment process the client MUST first construct an <code>AuthWrapper</code>, with the <code>payload_digest</code> equal to the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of serialized <code>AddressMetadata</code> and including the <code>pub_key</code>. This is serialized and then sent in the body of a PUT request to <code>/keys/{address}</code>. If sent with an <code>Authorization</code> header the request is interpreted as an attempt to PUT metadata, as described in [[#Putting Metadata|Putting Metadata]].
 
-<pre>
-{
-    "pubkey_digest": { pubkey digest },
-    "metadata_digest": { metadata digest }
-}
-</pre>
-
-where the
-
-* <code>pubkey digest</code> is the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of the compressed public key, associated to the target address, in hexidecimal format,
-* <code>metadata digest</code> is the SHA256 digest of the serialized <code>AddressMetadata</code> in hexidecimal format.
-
-On receiving such a request the keyserver MUST check whether the digest given is 32 bytes long and whether the address is a valid Bitcoin address, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body. Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
+On receiving such a request the keyserver MUST check whether the <code>payload_digest</code> given is 32 bytes long and whether the address is a valid Bitcoin address, if not the keyserver MUST respond with status <code>400</code> and SHOULD include an appropriate error message in the body.
 
 This initial request acts as the "authorization request" in the POP token protocol.
 
-The metadata commitment is the SHA256 digest of the concatenation of the <code>pubkey digest</code> and the SHA256 of the serialized <code>AddressMetadata</code>.
+The metadata commitment is the SHA256 digest of the concatenation SHA256 digest of the <code>pub_key</code> and the SHA256 of the serialized <code>AddressMetadata</code>. Both of these MUST be present in the <code>AddressMetadata</code>.
 
 <pre>metadata commitment = SHA256(SHA256(public key) || SHA256(address metadata))</pre>
 
-The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated.
+The metadata commitment will be broadcast to the Bitcoin network and signals to other keyservers that this <code>address:metadata</code> pair has provided the tokenized proof-of-work required to be replicated. Note that this is a commitment to a '''''specific encoding''''' of the <code>AddressMetadata</code> and that protocol buffers has a non-deterministic encoding. Any implementation MUST take special care in regards to this.
 
 The keyserver MUST continue to follow the POP protocol with following the additions:
 
@@ -198,7 +183,7 @@ Note that this means requests using different encodings of the same underlying a
 
 === Putting Metadata ===
 
-To upload metadata the client MUST send a PUT request to <code>/keys/{target address}</code> with the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
+To upload metadata the client MUST send a PUT request to <code>/keys/{target address}</code> with a <code>Authorization</code> header containing the POP token and the serialized <code>AuthWrapper</code>, containing the <code>AddressMetadata</code>, as the body.
 
 The keyserver MUST then perform the following steps:
 
