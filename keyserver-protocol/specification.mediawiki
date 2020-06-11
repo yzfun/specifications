@@ -105,6 +105,8 @@ message AuthWrapper {
 }
 </pre>
 
+The standalone specification for the <code>AuthorizationWrapper</code> can be [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki|found here]].
+
 == REST API Specification ==
 
 The keyserver provides a REST API to allow clients and other keyservers to get and put metadata.

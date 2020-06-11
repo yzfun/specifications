@@ -18,6 +18,24 @@ The Proof-of-Payment (POP) token authorization framework enables a third-party a
 
 <h2>
 <p align="center">
+ Authorization Wrapper Framework
+</p>
+</h2>
+
+<p align="center">
+The authorization wrapper framework allows a standard way of covering blobs with signatures.
+</p>
+
+<p align="center">
+  <a href="/authorization-wrapper/specification.mediawiki">
+    Specification
+  </a> | <a href="/authorization-wrapper/wrapper.proto">
+    Protobuf Schema
+  </a>
+</p>
+
+<h2>
+<p align="center">
  Keyserver Protocol
 </p>
 </h2>
@@ -29,7 +47,7 @@ The keyserver protocol allows public, Denial-of-Service resistant, cryptographic
 <p align="center">
   <a href="/keyserver-protocol/specification.mediawiki">
     Specification
-  </a> | <a href="/keyserver-protocol/wrapper.proto">
+  </a> | <a href="/authorization-wrapper/wrapper.proto">
     Authorization Wrapper Protobuf Schema
   </a> | <a href="/keyserver-protocol/keyserver.proto">
     Keyserver Protobuf Schema

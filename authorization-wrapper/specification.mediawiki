@@ -1,0 +1,60 @@
+<pre>
+  Title: Authorization Wrapper Framework
+  Author: Shammah Chancellor <shammah.chancellor@cashweb.io>
+          Harry Barber <harry.barber@cashweb.io>
+  Status: Draft
+  Created: 2019-11-15
+  License: MIT
+</pre>
+
+== Introduction ==
+
+=== Abstract ===
+
+The authorization wrapper framework provides a standardized way for blobs to be covered by a signature from a asymmetric signature scheme. This provides integrity, authentication, and non-repuditation.
+
+=== Notational Conventions ===
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]].
+
+Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "authorization", "sign", "signature", "validate", and "verify".
+
+Unless otherwise noted, all the protocol parameter names and values are case sensitive.
+
+== Schema ==
+
+The <code>AuthorizationWrapper</code> message is defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
+
+<pre>
+syntax = "proto3";
+package wrapper;
+
+message AuthWrapper {
+    // Serialized version of the public key.
+    bytes pub_key = 1;
+    // Signature is the signature of the metadata by public key.
+    bytes signature = 2;
+    // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
+    enum SignatureScheme {
+        SCHNORR = 0;
+        ECDSA = 1;
+    }
+    SignatureScheme scheme = 3;
+    // The serialized payload covered by the signature.
+    bytes serialized_payload = 4;
+    // The SHA256 digest of the serialized_payload.
+    bytes payload_digest = 5;
+}
+</pre>
+
+=== Usage ===
+
+At least one of <code>serialized_payload</code> and <code>payload_digest</code> MUST be present. In the case when both are present the <code>payload_digest</code> MUST equal the [[https://tools.ietf.org/html/rfc4634|SHA256]] digest of <code>serialized_payload</code>.
+
+Using the <code>AuthWrapper</code> without the <code>serialized_payload</code> being present allows authenticated notifcations, in cases where transmission of the whole data is undesired.
+
+If the <code>signature</code> field is present it MUST contain a raw signature covering the SHA256 digest of <code>serialized_payload</code> (or equivalently, <code>payload_digest</code> if it is present), the signature given MUST pass verification using the <code>pub_key</code>.
+
+== References ==
+* [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
+* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
