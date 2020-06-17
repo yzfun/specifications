@@ -29,7 +29,7 @@ Monetization of goods over the internet often involves the restriction of specif
 
 Bitcoin allows payments across the internet without the need for trusted intermediaries and the [[https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki|BIP70 Payment Protocol]] provides an extra layer of customer assurance during payments.
 
-Authorization token schemes, such as [[https://tools.ietf.org/html/rfc6750|Bearer tokens (RFC6750)]], provide managed access to protected resources.
+Authorization token schemes, such as [[https://tools.ietf.org/html/rfc6750|Bearer tokens]], provide managed access to protected resources.
 
 A standardized protocol combining authorization tokens with BIP70 would provide merchants with an elegant way to monetize their services.
 
@@ -153,6 +153,10 @@ Stateless protocols provide a myriad of benefits including scalability, availabi
 * [[https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki|BIP72 bitcoin: uri extensions for Payment Protocol]]
 * [[https://developers.google.com/protocol-buffers|Google's Protocol Buffers]]
 * [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119 - RFC Key Words]]
+* [[https://tools.ietf.org/html/rfc2616|RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1]]
 * [[https://tools.ietf.org/html/rfc3986|RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax]]
 * [[https://tools.ietf.org/html/rfc4949|RFC 4949 - Internet Security Glossary, Version 2]]
+* [[[https://tools.ietf.org/html/rfc5246|RFC 5246 - The Transport Layer Security (TLS) Protocol Version 1.2]]]
 * [[https://tools.ietf.org/html/rfc5280|RFC 5280 - X.509 Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile]]
+* [[https://tools.ietf.org/html/rfc6749|RFC 6749 - The OAuth 2.0 Authorization Framework]]
+* [[https://tools.ietf.org/html/rfc6750|RFC 6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage]]
