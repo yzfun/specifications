@@ -1,0 +1,189 @@
+<pre>
+  Title: Relay Protocol
+  Author: Shammah Chancellor <shammah.chancellor@cashweb.io>
+          Harry Barber <harry.barber@cashweb.io>
+  Status: Draft
+  Created: 2019-11-15
+  License: MIT
+</pre>
+
+== Introduction ==
+
+=== Abstract ===
+
+TODO
+
+=== Notational Conventions ===
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]].
+
+The rule URI-reference is included from [[https://tools.ietf.org/html/rfc3986|Uniform Resource Identifier (URI): Generic Syntax]].
+
+Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "attack", "authentication", "authorization", "certificate", "sign", "signature", "trust", "validate", and "verify".
+
+Unless otherwise noted, all the protocol parameter names and values are case sensitive.
+
+=== Motivation ===
+
+TODO
+
+== Overview ==
+
+=== Address Payload ===
+
+Throughout this specification, the use of "address payload" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses where the <code>public key</code> is a compressed public key.
+
+=== Relay Messages ===
+
+The messages specific to the relay protocol are defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
+
+<pre>
+
+</pre>
+
+=== Authorization Wrapper ===
+
+The <code>AuthorizationWrapper</code> is a proto3 message allowing payloads to be covered by a ECDSA or Schnorr signature. Within the keyserver protocol the <code>TODO</code> plays the role of the payload - having the metadata GET and PUT while wrapped provides integrity, authentication, and non-repuditation.
+
+<pre>
+syntax = "proto3";
+package wrapper;
+
+message AuthWrapper {
+    // Serialized version of the public key.
+    bytes pub_key = 1;
+    // Signature is the signature of the metadata by public key.
+    bytes signature = 2;
+    // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
+    enum SignatureScheme {
+        SCHNORR = 0;
+        ECDSA = 1;
+    }
+    SignatureScheme scheme = 3;
+    // The serialized payload covered by the signature.
+    bytes serialized_payload = 4;
+    // The SHA256 digest of the serialized_payload.
+    bytes payload_digest = 5;
+}
+</pre>
+
+The standalone specification for the <code>AuthorizationWrapper</code> can be [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki|found here]].
+
+== REST API Specification ==
+
+The keyserver provides a REST API to allow clients to get and put messages and profiles.
+
+We use the [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]] to allow new accounts.
+
+The keyserver MUST provide the following endpoints:
+
+{| class="wikitable"
+! style="font-weight:bold;" | Path
+! style="font-weight:bold;" | Method
+! style="font-weight:bold;" | Purpose
+! style="font-weight:bold;" | Protection
+|-
+| /messages/{address}
+| GET
+| Get messages from an address
+| Requires POP token
+|-
+| /messages/{address}
+| PUT
+| Put messages to an address
+| None
+|-
+| /messages/{address}
+| GET
+| Get messages from an address
+| None
+|-
+| /profiles/{address}
+| GET
+| Get profile to an address
+| Requires POP token
+|-
+| /profiles/{address}
+| PUT
+| Put profile to an address
+| Requires POP token
+|-
+| /ws/{address}
+| GET
+| Connect to a websocket stream of messages
+| Requires POP token
+|-
+|}
+
+=== Proof-of-Payment Authorization ===
+
+Before getting messages or putting a profile to a target address on the relay server the client MUST first obtain a POP token. The client MAY achieve this via the POP token framework.
+
+To initiate the payment process the client SHOULD first send an empty GET or PUT request to the <code>/messages/{address}</code> or <code>/profiles/{address}</code> respectively. This initial request acts as the "authorization request" in the POP token protocol.
+
+=== Getting Profiles ===
+
+To get a profile, the client MUST send a GET request to <code>/profiles/{address}</code> with an empty body.
+
+The keyserver MUST then perform the following steps:
+
+# Validate and decode the <code>address</code> given in the URL, returning the address payload.
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Lookup the address payload <code>AuthWrapper</code> containing the <code>TODO</code>, then respond with status code <code>200</code> and the serialized <code>AuthWrapper</code>.
+#* If the metadata is not found then the relay server MUST respond with status code <code>404</code>.
+#* If the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Payload</code> is greater than the current unix time in milliseconds then the keyserver MUST respond with status code <code>404</code>.
+#* On an internal failure the keyserver MUST respond with status code <code>500</code>.
+
+Note that this means requests using different encodings of the same underlying address payload MUST retrieve the same metadata.
+
+=== Putting Profiles ===
+
+To upload a profile the client MUST send a PUT request to <code>/profiles/{target address}</code> with a <code>Authorization</code> header containing the POP token and the serialized <code>AuthWrapper</code>, containing the <code>TODO</code>, as the body.
+
+The relay server MUST then perform the following steps:
+
+# Validate and decode the <code>target address</code> given in the URL, returning the address payload. 
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>TODO</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>public_key</code> field of the <code>TODO</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>TODO</code> and the target address's payload.
+# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>TODO</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
+# Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>pub_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>TODO</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>TODO</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# The keyserver MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
+# Return status code <code>200</code>.
+
+=== Getting Messages ===
+
+To get a range of messages, the client MUST send a GET request to <code>/messages/{address}</code> with a <code>Authorization</code> header containing the POP token, query string parameters described below, and the serialized <code>MessagePage</code> in the body. The <code>messages</code> field of the <code>MessagePage</code> is collected in correspondence with the conditions below and ordered by the <code>received_time</code> field. The start and end fields of the <code>MessagePage</code> are filled from the data from the first and last messages.
+
+==== Using Digest ====
+
+If the <code>digest</code> query string parameter is present the relay server MUST collect the single message in the addresses inbox with <code>payload_digest</code> matching <code>digest</code>. It MUST NOT be used in combination with any other parameters, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message.
+
+==== Range Queries ====
+
+If the <code>start_time</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> greater than or equal to <code>start_time</code>. It MUST NOT be used in combination <code>start_digest</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message.
+
+If the <code>start_digest</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> greater than or equal to the <code>received_time</code> given in the message whose payload matches <code>payload_digest</code>. It MUST NOT be used in combination <code>start_time</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message. If <code>start_digest</code> matches no payload at the specified address the relay server MUST respond with <code>404</code> and SHOULD include an appriopriate error message.
+
+If the <code>end_time</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> less than <code>end_time</code>. It MUST NOT be used in combination <code>end_digest</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message.
+
+If the <code>end_digest</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> less than the <code>received_time</code> given in the message whose payload matches <code>payload_digest</code>. It MUST NOT be used in combination <code>end_time</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message. If <code>end_digest</code> matches no payload at the specified address the relay server MUST respond with <code>404</code> and SHOULD include an appriopriate error message.
+
+
+=== Putting Messages ===
+
+
+== Footnotes ==
+
+<references />
+
+== References ==
+* [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
+* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
