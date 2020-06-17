@@ -15,7 +15,7 @@ The authorization wrapper framework provides a standardized way for blobs to be 
 
 === Notational Conventions ===
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC 2119]].
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[https://www.ietf.org/rfc/rfc2119.txt|RFC Key Words]].
 
 Certain security-related terms are to be understood in the sense defined in [[https://tools.ietf.org/html/rfc4949|Internet Security Glossary, Version 2]].  These terms include, but are not limited to, "authorization", "sign", "signature", "validate", and "verify".
 
@@ -57,4 +57,5 @@ If the <code>signature</code> field is present it MUST contain a raw signature c
 
 == References ==
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
-* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://tools.ietf.org/html/rfc4634|RFC 4634 - US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://tools.ietf.org/html/rfc4949|RFC 4949 - Internet Security Glossary, Version 2]]
