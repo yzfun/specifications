@@ -31,7 +31,7 @@ Traditional keyservers are subject to certificate spamming attacks. By being a f
 
 === Address Payload ===
 
-Throughout this specification, the use of "address payload" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses where the <code>public key</code> is a compressed public key.
+Throughout this specification, the use of "address payload" refers specifically to the decoded payload of an address. For example, <code>RIPEMD-160(SHA-256(public key))</code> for current Bitcoin addresses.
 
 === Keyserver Messages ===
 
@@ -230,5 +230,9 @@ In order to prevent an explosion of GET requests across the network it is RECOMM
 
 == References ==
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
-* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
 * [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
+* [[https://tools.ietf.org/html/rfc2119|RFC 2119 - RFC Key Words]]
+* [[https://tools.ietf.org/html/rfc3986|RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax]]
+* [[https://tools.ietf.org/html/rfc4634|RFC 4634 - US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://tools.ietf.org/html/rfc4949|RFC 4949 - Internet Security Glossary, Version 2]]
+* [[https://tools.ietf.org/html/rfc6750|RFC 6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage]]
