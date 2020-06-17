@@ -171,12 +171,23 @@ If the <code>start_time</code> query string parameter is present the relay serve
 
 If the <code>start_digest</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> greater than or equal to the <code>received_time</code> given in the message whose payload matches <code>payload_digest</code>. It MUST NOT be used in combination <code>start_time</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message. If <code>start_digest</code> matches no payload at the specified address the relay server MUST respond with <code>404</code> and SHOULD include an appriopriate error message.
 
+If start parameters are absent then the relay server MUST assume that <code>start_time</code> is 0.
+
 If the <code>end_time</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> less than <code>end_time</code>. It MUST NOT be used in combination <code>end_digest</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message.
 
 If the <code>end_digest</code> query string parameter is present the relay server MUST collect messages in the address inbox with <code>received_time</code> less than the <code>received_time</code> given in the message whose payload matches <code>payload_digest</code>. It MUST NOT be used in combination <code>end_time</code>, otherwise the relay server MUST respond with status code <code>400</code> and SHOULD include an appriopriate error message. If <code>end_digest</code> matches no payload at the specified address the relay server MUST respond with <code>404</code> and SHOULD include an appriopriate error message.
 
+If start parameters are absent then the relay server MUST assume that <code>end_time</code> is infinity.
 
 === Putting Messages ===
+
+
+
+=== Subscribing to Messages ===
+
+To connect to a stream of websockets, the client MUST send a GET request to <code>/ws/{address}</code> with a <code>Authorization</code> header containing the POP token and an empty body.
+
+The relay server MUST send a serialized <code>Message</code> to the client
 
 
 == Footnotes ==
@@ -185,5 +196,6 @@ If the <code>end_digest</code> query string parameter is present the relay serve
 
 == References ==
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
-* [[https://tools.ietf.org/html/rfc4634|US Secure Hash Algorithms (SHA and HMAC-SHA)]]
 * [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
+* [[https://tools.ietf.org/html/rfc4634|RFC 4634 - US Secure Hash Algorithms (SHA and HMAC-SHA)]]
+* [[https://tools.ietf.org/html/rfc6455|RFC 6455 - The WebSocket Protocol]]
