@@ -26,7 +26,6 @@ message Payload {
   int64 timestamp = 1;
   // The entries, containing body of the payload.
   repeated Entry entries = 2;
-  // Possibly other stuff relevant to the whole message later
 }
 
 // A stamp transaction paired with a list of vouts identifying to stamp outputs.
@@ -57,9 +56,9 @@ message Stamp {
 // The primary message used in communication over the cashweb protocol.
 message Message {
   // The senders serialized public key.
-  bytes source_pub_key = 1;
+  bytes source_public_key = 1;
   // The destinations serialized public key.
-  bytes destination_pub_key = 2;
+  bytes destination_public_key = 2;
   // Maleable server time. This field is optional.
   int64 received_time = 3;
   // The SHA-256 digest of the payload. This is independent of the MAC
