@@ -23,27 +23,27 @@ Unless otherwise noted, all the protocol parameter names and values are case sen
 
 == Schema ==
 
-The <code>AuthorizationWrapper</code> message is defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
+The <code>AuthWrapper</code> message is defined in the following [[https://developers.google.com/protocol-buffers/docs/proto3|proto3]] schema.
 
 <pre>
 syntax = "proto3";
 package wrapper;
 
 message AuthWrapper {
-    // Serialized version of the public key.
-    bytes pub_key = 1;
-    // Signature is the signature of the metadata by public key.
-    bytes signature = 2;
-    // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
-    enum SignatureScheme {
-        SCHNORR = 0;
-        ECDSA = 1;
-    }
-    SignatureScheme scheme = 3;
-    // The serialized payload covered by the signature.
-    bytes serialized_payload = 4;
-    // The SHA256 digest of the serialized_payload.
-    bytes payload_digest = 5;
+  // Serialized version of the public key.
+  bytes public_key = 1;
+  // Signature is the signature of the metadata by public key.
+  bytes signature = 2;
+  // Signature scheme provided.  Default is Schnorr, but can be ecdsa.
+  enum SignatureScheme {
+    SCHNORR = 0;
+    ECDSA = 1;
+  }
+  SignatureScheme scheme = 3;
+  // The serialized payload covered by the signature.
+  bytes serialized_payload = 4;
+  // The SHA256 digest of the serialized_payload.
+  bytes payload_digest = 5;
 }
 </pre>
 
@@ -53,7 +53,7 @@ At least one of <code>serialized_payload</code> and <code>payload_digest</code> 
 
 Using the <code>AuthWrapper</code> without the <code>serialized_payload</code> being present allows authenticated notifcations, in cases where transmission of the whole data is undesired.
 
-If the <code>signature</code> field is present it MUST contain a raw signature covering the SHA256 digest of <code>serialized_payload</code> (or equivalently, <code>payload_digest</code> if it is present), the signature given MUST pass verification using the <code>pub_key</code>.
+If the <code>signature</code> field is present it MUST contain a raw signature covering the SHA256 digest of <code>serialized_payload</code> (or equivalently, <code>payload_digest</code> if it is present), the signature given MUST pass verification using the <code>public_key</code>.
 
 == References ==
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
