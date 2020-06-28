@@ -247,6 +247,55 @@ message AuthWrapper {
 
 The standalone specification for the <code>AuthWrapper</code> can be [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki|found here]].
 
+== Authenticated Encryption ==
+
+Messages simulatenously enjoy confidentiality and authenticity via the use of authentication encryption.
+
+For this section we abbreviate the 256-bit private key of the public key <code>dG = destination_public_key</code> as <code>d</code> and, similarly for <code>s</code> for the <code>sG = source_public_key</code>.
+
+We make heavy use of the [[https://tools.ietf.org/html/rfc4634|HMAC algorithm]], we use <code>HMAC(key, message)</code> to denote the HMAC-SHA-256 function.
+
+=== Encryption ===
+
+If the <code>scheme</code> is <code>None</code> then the ciphertext MUST be unencrypted.
+
+
+
+If the <code>scheme</code> is <code>EphemeralDH</code> then the encryption key MUST be constructed as follows:
+
+<pre>
+key = HMAC(ser(sdG), salt)
+</pre>
+
+where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
+
+The <code>ciphertext</code> is then constructed using the [[https://tools.ietf.org/html/rfc3602|AES-CBC-256]] with key given above and a null IV. Decryption can be performed by anyone with access to <code>sdG</code> and the <code>salt</code>.
+
+One MUST NOT reuse the salt between messages sent to the same destination as this breaks the security of the cryptography.
+
+=== Authenticate ===
+
+The <code>ciphertext_hmac</code> MUST be constructed as follows:
+
+<pre>
+ciphertext_digest = HMAC(HMAC(ser(sdG), salt), ciphertext_digest)
+</pre>
+
+where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
+
+Authentication of a <code>Message</code> may be performed by anyone with access to <code>sdG</code>, <code>salt</code>, and <code>ciphertext_digest</code> by comparison of the <code>ciphertext_hmac</code> given in the message with the construction.
+
+== Stamps ==
+
+A "stamp" is a collection of Bitcoin transactions with distinguished outpoints, which is cryptographically attached to messages. This information is contained within the <code>Stamp</code> message.
+
+If the <code>stamp_type</code> is <code>None</code> then the <code>stamp_outpoints</code> field MUST be empty.
+
+If the <code>stamp_type</code> is <code>MessageCommitment</code> then each outpoint, indexed by <code>index</code>, in <code>stamp_outpoints</code> is subject to the following constraints:
+
+* The <code>stamp_tx</code> MUST decode to a valid Bitcoin transaction.
+* Each ouput of <code>stamp_tx</code> indexed by a <code>vout</code> in the <code>vouts</code> field MUST be a "pay-to-pubkey-hash" generated using [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]] using the path <code>44/145/index/vout</code>.
+
 == REST API Specification ==
 
 The relay server provides a REST API to allow clients to get and put messages and profiles.
@@ -369,44 +418,6 @@ To send messages to a addresses inbox, the client MUST send a PUT request to <co
 To connect to a stream of websockets, the client MUST send a GET request to <code>/ws/{address}</code> with a <code>Authorization</code> header containing the POP token and an empty body.
 
 The relay server MUST send a serialized <code>Message</code> to the client each time a new message arrives in the addresses inbox.
-
-== Stamps ==
-
-
-
-== Authenticated Encryption ==
-
-Messages simulatenously enjoy confidentiality and authenticity via the use of authentication encryption.
-
-For this section we abbreviate the 256-bit private key of the public key <code>dG = destination_public_key</code> as <code>d</code> and, similarly for <code>s</code> for the <code>sG = source_public_key</code>.
-
-We make heavy use of the [[https://tools.ietf.org/html/rfc4634|HMAC algorithm]], we use <code>HMAC(key, message)</code> to denote the HMAC-SHA-256 function.
-
-=== Encryption ===
-
-The encryption key MUST be constructed as follows:
-
-<pre>
-key = HMAC(ser(sdG), salt)
-</pre>
-
-where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
-
-The <code>ciphertext</code> is then constructed using the [[https://tools.ietf.org/html/rfc3602|AES-CBC-256]] with key given above and a null IV. Decryption can be performed by anyone with access to <code>sdG</code> and the <code>salt</code>.
-
-One MUST NOT reuse the salt between messages sent to the same destination as this breaks the security of the cryptography.
-
-=== Authenticate ===
-
-The <code>payload_hmac</code> MUST be constructed as follows:
-
-<pre>
-payload_digest = HMAC(HMAC(ser(sdG), salt), payload_digest)
-</pre>
-
-where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
-
-Authentication of a <code>Message</code> may be performed by anyone with access to <code>sdG</code>, <code>salt</code>, and <code>payload_digest</code> by comparison of the <code>payload_hmac</code> given in the message with the construction.
 
 == Footnotes ==
 
