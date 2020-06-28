@@ -221,7 +221,7 @@ message PayloadPage {
 
 === Authorization Wrapper ===
 
-The <code>AuthorizationWrapper</code> is a proto3 message allowing payloads to be covered by a ECDSA or Schnorr signature. Within the relay server protocol the <code>Profile</code> plays the role of the payload - having the metadata GET and PUT while wrapped provides integrity, authentication, and non-repuditation.
+The <code>AuthWrapper</code> is a proto3 message allowing payloads to be covered by a ECDSA or Schnorr signature. Within the relay server protocol the <code>Profile</code> plays the role of the payload - having the metadata GET and PUT while wrapped provides integrity, authentication, and non-repuditation.
 
 <pre>
 syntax = "proto3";
@@ -245,7 +245,7 @@ message AuthWrapper {
 }
 </pre>
 
-The standalone specification for the <code>AuthorizationWrapper</code> can be [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki|found here]].
+The standalone specification for the <code>AuthWrapper</code> can be [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki|found here]].
 
 == REST API Specification ==
 
@@ -325,19 +325,18 @@ The relay server MUST then perform the following steps:
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>Profile</code> message. If either are malformed then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Use the <code>public_key</code> field of the <code>TODO</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
-# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>TODO</code> and the target address's payload.
-# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>TODO</code> is greater than the current unix time, else the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>public_key</code> field of the <code>AuthWrapper</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>Profile</code> is greater than the current unix time, else the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token fails validation the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the relay server MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
-# Verify that the the <code>signature</code> field contains a signature over the <code>serialized_payload</code> using a private key associated with the public key given in the <code>public_key</code> field using the signature scheme given in the <code>scheme</code> field. If the signature is found to be invalid or the <code>scheme</code> is an unexpected value then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>TODO</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>TODO</code> is strictly larger than the existing timestamp. If not, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Verify that the <code>AuthWrapper</code> passes the validation described in the [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki||Authorization Wrapper Framework]], if not then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>Profile</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>TODO</code> is strictly larger than the existing timestamp. If not, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # The relay server MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
 # Return status code <code>200</code>.
 
 === Getting Messages ===
 
-To get a single or range of messages, the client MUST send a GET request to <code>/messages/{address}</code> with a <code>Authorization</code> header containing the POP token, query string parameters described below, and the serialized <code>MessagePage</code> in the body. The <code>messages</code> field of the <code>MessagePage</code> is collected in correspondence with the conditions below and ordered by the <code>received_time</code> field. The start and end fields of the <code>MessagePage</code> are filled from the data from the first and last messages.
+To get a single or range of messages, the client MUST send a GET request to <code>/messages/{address}</code> with a <code>Authorization</code> header containing the POP token, the query string parameters described below, and the serialized <code>MessagePage</code> in the body. The <code>messages</code> field of the <code>MessagePage</code> is collected in correspondence with the conditions below and ordered by the <code>received_time</code> field. The start and end fields of the <code>MessagePage</code> are filled from the data from the first and last messages.
 
 ==== Single Digest ====
 
@@ -375,27 +374,39 @@ The relay server MUST send a serialized <code>Message</code> to the client each 
 
 
 
-== Authentication Encryption ==
+== Authenticated Encryption ==
 
-Messages simulatenously enjoy confidentiality and authenticity via the use of authentication encryption. 
+Messages simulatenously enjoy confidentiality and authenticity via the use of authentication encryption.
 
-For this section we abbreviate the 256-bit private key of the public key <code>dP = destination_public_key</code> as <code>d</code> and, similarly for <code>s</code> for the <code>sP = source_public_key</code>.
+For this section we abbreviate the 256-bit private key of the public key <code>dG = destination_public_key</code> as <code>d</code> and, similarly for <code>s</code> for the <code>sG = source_public_key</code>.
 
-In both authentication and encryption/decryption we use the [[https://tools.ietf.org/html/rfc5869|HKDF]] to generate a key. We denote <code>HKDF(IKM, salt, info)</code> as the operation of HKDF-extract using <code>salt</code> and <code>IKM</code> to create the pseudorandom key <code>PKR</code>, followed by application of HKDF-expand using <code>info</code>.
+We make heavy use of the [[https://tools.ietf.org/html/rfc4634|HMAC algorithm]], we use <code>HMAC(key, message)</code> to denote the HMAC-SHA-256 function.
 
-=== Shared Secret ===
+=== Encryption ===
 
-In order to authenticate and encrypt/decrypt we the message payload MUST first obtain a shared secret. The shared secret can be constructed with either <code>d</code> and <code>sG</code>, or <code>s</code> and <code>dG</code> via <code>dsP</code>.
+The encryption key MUST be constructed as follows:
+
+<pre>
+key = HMAC(ser(sdG), salt)
+</pre>
+
+where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
+
+The <code>ciphertext</code> is then constructed using the [[https://tools.ietf.org/html/rfc3602|AES-CBC-256]] with key given above and a null IV. Decryption can be performed by anyone with access to <code>sdG</code> and the <code>salt</code>.
+
+One MUST NOT reuse the salt between messages sent to the same destination as this breaks the security of the cryptography.
 
 === Authenticate ===
 
-For some a salt <code>auth_salt</code> and <code>auth_infos</code> we may construct the <code>payload_hmac</code> as follows
+The <code>payload_hmac</code> MUST be constructed as follows:
 
 <pre>
-payload_digest = HMAC-256(HKDF(auth_salt, auth_infos))
+payload_digest = HMAC(HMAC(ser(sdG), salt), payload_digest)
 </pre>
 
-=== Encryption ===
+where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
+
+Authentication of a <code>Message</code> may be performed by anyone with access to <code>sdG</code>, <code>salt</code>, and <code>payload_digest</code> by comparison of the <code>payload_hmac</code> given in the message with the construction.
 
 == Footnotes ==
 
@@ -404,6 +415,7 @@ payload_digest = HMAC-256(HKDF(auth_salt, auth_infos))
 == References ==
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
 * [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
+* [[https://tools.ietf.org/html/rfc3602|RFC 3602 - The AES-CBC Cipher Algorithm and Its Use with IPsec]]
 * [[https://tools.ietf.org/html/rfc4634|RFC 4634 - US Secure Hash Algorithms (SHA and HMAC-SHA)]]
 * [[https://tools.ietf.org/html/rfc5869|RFC 5869 - HMAC-based Extract-and-Expand Key Derivation Function (HKDF)]]
 * [[https://tools.ietf.org/html/rfc6090|RFC 6090 - Fundamental Elliptic Curve Cryptography Algorithms]]
