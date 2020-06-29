@@ -259,8 +259,6 @@ We make heavy use of the [[https://tools.ietf.org/html/rfc4634|HMAC algorithm]],
 
 If the <code>scheme</code> is <code>None</code> then the ciphertext MUST be unencrypted.
 
-
-
 If the <code>scheme</code> is <code>EphemeralDH</code> then the encryption key MUST be constructed as follows:
 
 <pre>
@@ -287,14 +285,18 @@ Authentication of a <code>Message</code> may be performed by anyone with access 
 
 == Stamps ==
 
-A "stamp" is a collection of Bitcoin transactions with distinguished outpoints, which is cryptographically attached to messages. This information is contained within the <code>Stamp</code> message.
+A "stamp" is a collection of Bitcoin transactions with distinguished outpoints, which are cryptographically attached to messages. This information is contained within the <code>stamp</code> field of <code>Message</code>.
 
 If the <code>stamp_type</code> is <code>None</code> then the <code>stamp_outpoints</code> field MUST be empty.
 
 If the <code>stamp_type</code> is <code>MessageCommitment</code> then each outpoint, indexed by <code>index</code>, in <code>stamp_outpoints</code> is subject to the following constraints:
 
 * The <code>stamp_tx</code> MUST decode to a valid Bitcoin transaction.
-* Each ouput of <code>stamp_tx</code> indexed by a <code>vout</code> in the <code>vouts</code> field MUST be a "pay-to-pubkey-hash" generated using [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]] using the path <code>44/145/index/vout</code>.
+* Each ouput of <code>stamp_tx</code> indexed by a <code>vout</code> in the <code>vouts</code> field MUST be a "pay-to-pubkey-hash" generated using [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]]. Each public key is generated using the path <code>44/145/index/vout</code> with master key public key <code>dG + ciphertext_digest G</code> and a null chaincode.
+
+Anyone with access to the destination's public key, <code>dG</code>, the <code>Stamp</code> message, and the <code>ciphertext_digest</code> can verify that the stamp satisfies the constraints. 
+
+Anyone with access to the destination's private key, <code>d</code>, the <code>Stamp</code>, and the <code>ciphertext_digest</cope> can spend the outputs. Each private key is generated using the path <code>44/145/index/vout</code> with master key private key <code>d + ciphertext_digest</code> and a null chaincode.
 
 == REST API Specification ==
 
@@ -379,7 +381,7 @@ The relay server MUST then perform the following steps:
 #* If the POP token fails validation the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the relay server MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Verify that the <code>AuthWrapper</code> passes the validation described in the [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki||Authorization Wrapper Framework]], if not then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>Profile</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>TODO</code> is strictly larger than the existing timestamp. If not, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>Profile</code> message exists at the address payload then check whether the timestamp given in the <code>Profile</code> of the new <code>AuthWrapper</code> is strictly larger than the existing timestamp. If not, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # The relay server MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
 # Return status code <code>200</code>.
 
@@ -411,7 +413,24 @@ The <code>/payloads</code> resource functions identically to the <code>/messages
 
 === Putting Messages ===
 
-To send messages to a addresses inbox, the client MUST send a PUT request to <code>/messages/{inbox address}</code> with a <code>Authorization</code> header containing the POP token and the serialized <code>AuthWrapper</code>, containing the <code>TODO</code>, as the body.
+To send messages to a addresses inbox, the client MUST send a PUT request to <code>/messages/{inbox address}</code> with a <code>Authorization</code> header containing the POP token and the serialized <code>Message</code> as the body.
+
+The relay server MUST then perform the following steps:
+
+# Validate and decode the <code>target address</code> given in the URL, returning the address payload. 
+#* Both base58 and cashaddr address formats MUST be supported.
+#* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressMetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>public_key</code> field of the <code>AuthWrapper</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>AddressMetadata</code> and the target address's payload.
+# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
+# Verify that the <code>AuthWrapper</code> passes the validation described in the [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki||Authorization Wrapper Framework]], if not then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>AddressMetadata</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# The keyserver MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
+# Return status code <code>200</code>.
+
 
 === Subscribing to Messages ===
 
@@ -424,6 +443,7 @@ The relay server MUST send a serialized <code>Message</code> to the client each 
 <references />
 
 == References ==
+* [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]]
 * [[https://developers.google.com/protocol-buffers/docs/proto3|Language Guide (proto3)]]
 * [[https://github.com/cashweb/specifications/blob/master/proof-of-payment-token/specification.mediawiki|Proof-of-Payment Authorization Framework]]
 * [[https://tools.ietf.org/html/rfc3602|RFC 3602 - The AES-CBC Cipher Algorithm and Its Use with IPsec]]
