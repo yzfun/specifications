@@ -420,17 +420,19 @@ The relay server MUST then perform the following steps:
 # Validate and decode the <code>target address</code> given in the URL, returning the address payload. 
 #* Both base58 and cashaddr address formats MUST be supported.
 #* Invalid addresses MUST be responded to with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Check that the request body is non-empty and successfully deserializes into a <code>AuthWrapper</code> message and its <code>serialized_payload</code> field successfully deserializes into a <code>AddressMetadata</code> message. If either are malformed then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# Use the <code>public_key</code> field of the <code>AuthWrapper</code> to generate an address and check whether its payload matches the target address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
-# Check that the request passes the POP token validation. The validation method consists of extracting the transaction ID and output index, fetching the metadata commitment from the blockchain, and then checking it matches the metadata commitment generated from the <code>AddressMetadata</code> and the target address's payload.
-# Check that the summation of the <code>timestamp</code> and <code>ttl</code> fields of the <code>AddressMetadata</code> is greater than the current unix time, else the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Check that the request body is non-empty and successfully deserializes into a <code>Message</code> message. If either are malformed then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# Use the <code>destination_public_key</code> field of the <code>Message</code> to generate an address and check whether its payload matches the inbox address's payload. In the case of Bitcoin, this condition is that the address decodes into the public key hash.
+# Check that the request passes the POP token validation.
 #* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
-# Verify that the <code>AuthWrapper</code> passes the validation described in the [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki||Authorization Wrapper Framework]], if not then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>AddressMetadata</code> message exists at the address payload then check whether the timestamp given in the <code>Payload</code> of the new <code>AddressMetadata</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# The keyserver MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
+# If <code>ciphertext_digest</code> is present then check that it matches <code>SHA256(ciphertext)</code>
+#* If the <code>ciphertext_digest</code> missing it MUST be added.
+#* If it mismatches then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the <code>ciphertext_size</code> is present then check that it matches the size of the <code>ciphertext</code>. If it mismatches then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the <code>destination_public_key</code> and <code>source_public_key</code> are distinct then the <code>stamp_type</code> of the <code>stamp</code> field MUST NOT be <code>None</code>.
+#* If it is, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+#* If constraints specified in the [[#Stamps|Stamps]] section above are not fulfilled then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body. 
 # Return status code <code>200</code>.
-
 
 === Subscribing to Messages ===
 
