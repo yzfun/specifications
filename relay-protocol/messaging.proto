@@ -67,8 +67,8 @@ message Stamp {
     None = 0;
     // Hash commitment means the stamp is being sent to the address specified by
     // public keys of the xpub defined by:
-    // PublicKey: dG + SHA256(ciphertext)G
-    // ChainCode: SHA256(ciphertext)
+    // PublicKey: dG + SHA256(payload)G
+    // ChainCode: SHA256(payload)
     MessageCommitment = 1;
   }
   // The stamp type.
@@ -85,18 +85,18 @@ message Message {
   bytes destination_public_key = 2;
   // Maleable server time. This field is optional.
   int64 received_time = 3;
-  // The SHA-256 digest of the ciphertext. This is independent of the MAC
+  // The SHA-256 digest of the payload. This is independent of the MAC
   // as only the sender/receiver can verify MAC.
   //
-  // The relay server may set this field if it strips the ciphertext from the
+  // The relay server may set this field if it strips the payload from the
   // message it sends to the client over websockets. In which case the
-  // ciphertext would be available over the payloads API.
-  bytes ciphertext_digest = 4;
+  // payload would be available over the payloads API.
+  bytes payload_digest = 4;
   // The stamp attached to the message.
   Stamp stamp = 5;
   // Represents an encryption scheme.
   enum EncryptionScheme {
-    // Indicates the ciphertext is unencrypted.
+    // Indicates the payload is unencrypted.
     None = 0;
     // For EphemeralDH, ECDH is used to generate a shared secret based on the
     // combination of the source and destination pubkeys. The shared secret is
@@ -120,17 +120,17 @@ message Message {
   // and this provides a way to do so that is strong against forgery.
   bytes salt = 7;
   // The HMAC of the payload using the shared key, HMAC(HMAC(ser(sdG), salt), payload_digest)
-  bytes ciphertext_hmac = 8;
+  bytes payload_hmac = 8;
   // Optional size, which may be set by the relay server. This enables the
   // client to deside if they want to download the payload based on the stamp
   // value.
-  uint64 ciphertext_size = 9;
+  uint64 payload_size = 9;
   // The serialized and encrypted payload and covered by the HMAC.
   //
   // This field may be stripped by a relay server if it is large. In which
   // case it will be made available at the payloads endpoint via the digest.
-  // If the ciphertext is not set, the payload digest becomes a mandatory field.
-  bytes ciphertext = 100;
+  // If the payload is not set, the payload digest becomes a mandatory field.
+  bytes payload = 100;
 }
 
 // Collection of messages. Pushed from client to server via HTTP.

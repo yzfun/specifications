@@ -107,8 +107,8 @@ message Stamp {
     None = 0;
     // Hash commitment means the stamp is being sent to the address specified by
     // public keys of the xpub defined by:
-    // PublicKey: dG + SHA256(ciphertext)G
-    // ChainCode: SHA256(ciphertext)
+    // PublicKey: dG + SHA256(payload)G
+    // ChainCode: SHA256(payload)
     MessageCommitment = 1;
   }
   // The stamp type.
@@ -128,9 +128,9 @@ message Message {
   // The SHA-256 digest of the payload. This is independent of the MAC
   // as only the sender/receiver can verify MAC.
   //
-  // The relay server may set this field if it strips the ciphertext from the
+  // The relay server may set this field if it strips the payload from the
   // message it sends to the client over websockets. In which case the
-  // ciphertext would be available over the payloads API.
+  // payload would be available over the payloads API.
   bytes payload_digest = 4;
   // The stamp attached to the message.
   Stamp stamp = 5;
@@ -159,7 +159,7 @@ message Message {
   // wallets may want to increment internal state with each message they send --
   // and this provides a way to do so that is strong against forgery.
   bytes salt = 7;
-  // The HMAC of the payload using the shared key, HMAC(ciphertext_digest, HMAC(sdG, salt)))
+  // The HMAC of the payload using the shared key, HMAC(payload_digest, HMAC(sdG, salt)))
   bytes payload_hmac = 8;
   // Optional size, which may be set by the relay server. This enables the
   // client to deside if they want to download the payload based on the stamp
@@ -169,7 +169,7 @@ message Message {
   //
   // This field may be stripped by a relay server if it is large. In which
   // case it will be made available at the payloads endpoint via the digest.
-  // If the ciphertext is not set, the payload digest becomes a mandatory field.
+  // If the payload is not set, the payload digest becomes a mandatory field.
   bytes payload = 100;
 }
 
@@ -257,7 +257,7 @@ We make heavy use of the [[https://tools.ietf.org/html/rfc4634|HMAC algorithm]],
 
 === Encryption ===
 
-If the <code>scheme</code> is <code>None</code> then the ciphertext MUST be unencrypted.
+If the <code>scheme</code> is <code>None</code> then the payload MUST be unencrypted.
 
 If the <code>scheme</code> is <code>EphemeralDH</code> then the encryption key MUST be constructed as follows:
 
@@ -267,21 +267,21 @@ key = HMAC(ser(sdG), salt)
 
 where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
 
-The <code>ciphertext</code> is then constructed using the [[https://tools.ietf.org/html/rfc3602|AES-CBC-256]] with key given above and a null IV. Decryption can be performed by anyone with access to <code>sdG</code> and the <code>salt</code>.
+The <code>payload</code> is then constructed using the [[https://tools.ietf.org/html/rfc3602|AES-CBC-256]] with key given above and a null IV. Decryption can be performed by anyone with access to <code>sdG</code> and the <code>salt</code>.
 
 One MUST NOT reuse the salt between messages sent to the same destination as this breaks the security of the cryptography.
 
 === Authenticate ===
 
-The <code>ciphertext_hmac</code> MUST be constructed as follows:
+The <code>payload_hmac</code> MUST be constructed as follows:
 
 <pre>
-ciphertext_digest = HMAC(HMAC(ser(sdG), salt), ciphertext_digest)
+payload_digest = HMAC(HMAC(ser(sdG), salt), payload_digest)
 </pre>
 
 where <code>ser(sdG)</code> is the 20 byte serialized shared secret and the <code>salt</code> is provided from the <code>Message</code> field.
 
-Authentication of a <code>Message</code> may be performed by anyone with access to <code>sdG</code>, <code>salt</code>, and <code>ciphertext_digest</code> by comparison of the <code>ciphertext_hmac</code> given in the message with the construction.
+Authentication of a <code>Message</code> may be performed by anyone with access to <code>sdG</code>, <code>salt</code>, and <code>payload_digest</code> by comparison of the <code>payload_hmac</code> given in the message with the construction.
 
 == Stamps ==
 
@@ -292,11 +292,11 @@ If the <code>stamp_type</code> is <code>None</code> then the <code>stamp_outpoin
 If the <code>stamp_type</code> is <code>MessageCommitment</code> then each outpoint, indexed by <code>index</code>, in <code>stamp_outpoints</code> is subject to the following constraints:
 
 * The <code>stamp_tx</code> MUST decode to a valid Bitcoin transaction.
-* Each ouput of <code>stamp_tx</code> indexed by a <code>vout</code> in the <code>vouts</code> field MUST be a "pay-to-pubkey-hash" generated using [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]]. Each public key is generated using the path <code>44/145/index/vout</code> with master key public key <code>dG + ciphertext_digest G</code> and a null chaincode.
+* Each ouput of <code>stamp_tx</code> indexed by a <code>vout</code> in the <code>vouts</code> field MUST be a "pay-to-pubkey-hash" generated using [[https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki|Hierarchical Deterministic Wallets]]. Each public key is generated using the path <code>44/145/index/vout</code> with master key public key <code>dG + payload_digest G</code> and a null chaincode.
 
-Anyone with access to the destination's public key, <code>dG</code>, the <code>Stamp</code> message, and the <code>ciphertext_digest</code> can verify that the stamp satisfies the constraints. 
+Anyone with access to the destination's public key, <code>dG</code>, the <code>Stamp</code> message, and the <code>payload_digest</code> can verify that the stamp satisfies the constraints. 
 
-Anyone with access to the destination's private key, <code>d</code>, the <code>Stamp</code>, and the <code>ciphertext_digest</cope> can spend the outputs. Each private key is generated using the path <code>44/145/index/vout</code> with master key private key <code>d + ciphertext_digest</code> and a null chaincode.
+Anyone with access to the destination's private key, <code>d</code>, the <code>Stamp</code>, and the <code>payload_digest</cope> can spend the outputs. Each private key is generated using the path <code>44/145/index/vout</code> with master key private key <code>d + payload_digest</code> and a null chaincode.
 
 == REST API Specification ==
 
@@ -425,10 +425,10 @@ The relay server MUST then perform the following steps:
 # Check that the request passes the POP token validation.
 #* If the POP token fails validation the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the keyserver MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
-# If <code>ciphertext_digest</code> is present then check that it matches <code>SHA256(ciphertext)</code>
-#* If the <code>ciphertext_digest</code> missing it MUST be added.
+# If <code>payload_digest</code> is present then check that it matches <code>SHA256(payload)</code>
+#* If the <code>payload_digest</code> missing it MUST be added.
 #* If it mismatches then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the <code>ciphertext_size</code> is present then check that it matches the size of the <code>ciphertext</code>. If it mismatches then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the <code>payload_size</code> is present then check that it matches the size of the <code>payload</code>. If it mismatches then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # If the <code>destination_public_key</code> and <code>source_public_key</code> are distinct then the <code>stamp_type</code> of the <code>stamp</code> field MUST NOT be <code>None</code>.
 #* If it is, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If constraints specified in the [[#Stamps|Stamps]] section above are not fulfilled then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body. 
