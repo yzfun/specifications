@@ -381,7 +381,7 @@ The relay server MUST then perform the following steps:
 #* If the POP token fails validation the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 #* If the POP token is missing from the <code>Authorization</code> header the relay server MUST respond with status code <code>402</code> and SHOULD include an appropriate error message in the body.
 # Verify that the <code>AuthWrapper</code> passes the validation described in the [[https://github.com/cashweb/specifications/blob/master/authorization-wrapper/specification.mediawiki||Authorization Wrapper Framework]], if not then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
-# If the an existing <code>Profile</code> message exists at the address payload then check whether the timestamp given in the <code>Profile</code> of the new <code>AuthWrapper</code> is strictly larger than the existing timestamp. If not, then the relay server MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
+# If the an existing <code>AuthWrapper</code> message exists at the address payload then check whether the timestamp given in the new <code>Profile</code> is strictly larger than the existing timestamp. If not, then the keyserver MUST respond with status code <code>400</code> and SHOULD include an appropriate error message in the body.
 # The relay server MUST store the new <code>AuthWrapper</code> at key given by the address payload. 
 # Return status code <code>200</code>.
 
