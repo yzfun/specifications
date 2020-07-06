@@ -43,7 +43,9 @@ CashWeb is an open messaging protocol for machine-to-machine and person-to-perso
 
 \section{Introduction}
 
-Many early adopters of the internet saw it as a platform for inexpensive, and fast, sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose. 
+\subsection{History}
+
+Many early adopters of the internet saw it as a platform for inexpensive, and fast, sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose.
 
 % Explain how users had rights here and how it was good
 % Slower run up to it all collapsing rather than jumping in - we can pace it like a epic film here
@@ -61,7 +63,7 @@ This authority was not taken by force, rather it was given freely to centralized
 % This needs to be fixed
 Two major inconveniences which have driven internet users to abandon their rights are: identifying important communications amongst unsolicited marketing advertisements, and maintaining the address where they receive communications. The design of the CashWeb protocol is centered around restoring user authority over their digital identities and privacy.
 
-\section{Why did we Centralize?}
+\subsection{Why did we Centralize?}
 
 % More statistics on how centralized we are right now here to smooth the transition here
 
@@ -81,11 +83,11 @@ In the early days of the internet, internet service providers (ISPs) also offere
 
 Our important correspondences (e.g. Bills, Pay statements, Second-factor authentication) have moved to email. The need to provide all these services with a new email address is a major inconvenience. In order to avoid this inconvenience, many internet users have opted to have email addresses with providers which were independent from their ISPs.
 
-\section{Consequences of Centralization}
+\subsection{Consequences of Centralization}
 
 % State that the grass is not greener, trade-off was taken where now the users are hostage etc
 
-\subsection{Loss of Identity}
+\subsubsection{Loss of Identity}
 
 Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity.
 
@@ -93,7 +95,7 @@ Now, loss of access to our email has become a life-altering event with significa
 
 Additionally, should we want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable.
 
-\subsection{Loss of Privacy}
+\subsubsection{Loss of Privacy}
 
 Centralized providers must generate revenue to maintain their infrastructure and generate a profit. However, many users when offered a free product vs one that costs money opt for free services. As such, many of these services provide access to email for free in return for the ability to advertise to the user in a controlled way. When compared to the deluge of spam users would otherwise receive, this is an acceptable trade-off.
 
@@ -107,23 +109,31 @@ Indeed, various companies purchase data across multiple services, and collate it
 
 The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
-\section{Requirements}
+\section{The CashWeb Protocol}
 
-\subsection{Functional Requirements}
+\subsection{Philosophy}
 
-In order to provide an alternative to the system.
+In order to provide an alternative to the existing system we adhere to the following principles:
 
-% Maybe these should be subsubsections
+\subsubsection{Simplicity}
 
-\begin{itemize}
-\item Ease of use -- 
 In order to support the needs of non-technical users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third-party providers which provide hosting, and operation, of various services.
-\item Ability to Migrate -- 
+
+\subsubsection{Migratability}
+
 Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions.
-\item Identity recovery -- In the case of a loss of identity, it must be possible to recover gracefully.
-\item Secure communication -- In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers.
-\item Spam mitigation -- In order to maintain secure communication, and the decentralized nature of the CashWeb system, spam must be impractical to send large volumes of email by one party.
-\end{itemize}
+
+\subsubsection{Identity Recovery}
+
+In the case of a loss of identity, it must be possible to recover gracefully.
+
+\subsubsection{Security}
+
+In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers.
+
+\subsubsection{Privacy}
+
+In order to maintain secure communication, and the decentralized nature of the CashWeb system, spam must be impractical to send large volumes of email by one party.
 
 \subsection{Technical Requirements}
 
@@ -200,6 +210,8 @@ An end-user client is necessary for interacting with this system in a easy-to-us
 The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
+
+\section{Applications}
 
 \section{Conclusion}
 
