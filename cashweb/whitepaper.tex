@@ -225,7 +225,7 @@ This metadata is indexed by the hash of ones public key and includes said public
 %   \nextlevel[1]
 % \end{msc}
 
-Uploading data to the keyserver is protected by a specific version of the "Proof-of-Payment protocol" outlined above. This provides a way to anchor onchain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
+Uploading data to the keyserver is protected by a specific version of the "Proof-of-Payment protocol" (POP protocol) outlined above. This provides a way to anchor onchain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 * Anti-DDoS mechanisms are considered from inception and hence we can arrive at a more simple and robust overall design.
@@ -244,11 +244,13 @@ The distinction here between keyservers and relay servers is made due to seperat
 * Keyservers provide replication and therefore censorship-resistance for small amounts of unencryptd data.
 * Relay servers do not provide replication and therefore can cheaply host large amounts of encrypted personal data.
 
+Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. Unlike the keyserver, the specific implementation of the POP token protocol is not enforced due to lack of replication. Clients supporting the POP token protocol should be agnostic to any variations of implementation across relay servers, this allows relay servers to provide a variety of hosting plans.
+
 \subsubsection{Messaging Client}
 
 An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
-The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
+The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part ignorant as to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
