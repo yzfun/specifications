@@ -6,14 +6,15 @@
 \usepackage{url}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
-\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
-\usepackage{hyperref}       % hyperlinks
-\usepackage{url}            % simple URL typesetting
-\usepackage{booktabs}       % professional-quality tables
-\usepackage{amsfonts}       % blackboard math symbols
-\usepackage{nicefrac}       % compact symbols for 1/2, etc.
-\usepackage{microtype}      % microtypography
+\usepackage[T1]{fontenc}  % use 8-bit T1 fonts
+\usepackage{hyperref}    % hyperlinks
+\usepackage{url}      % simple URL typesetting
+\usepackage{booktabs}    % professional-quality tables
+\usepackage{amsfonts}    % blackboard math symbols
+\usepackage{nicefrac}    % compact symbols for 1/2, etc.
+\usepackage{microtype}   % microtypography
 \usepackage{lipsum}
+\usepackage{msc}
 
 \usepackage{draftwatermark}
 \SetWatermarkText{Draft}
@@ -30,11 +31,11 @@
 \title{CashWeb}
 
 \author{
-  Shammah Chancellor \\
-  \texttt{shammah.chancellor@cashweb.io} \\
-  \And
-  Harry Barber \\
-  \texttt{harry.barber@cashweb.io} \\
+ Shammah Chancellor \\
+ \texttt{shammah.chancellor@cashweb.io} \\
+ \And
+ Harry Barber \\
+ \texttt{harry.barber@cashweb.io} \\
 }
 
 \begin{document}
@@ -126,21 +127,17 @@ In order to support the needs of non-technical users, CashWeb must be a solution
 
 Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. A name resolution system which is distributed in nature. The name resolution system must be resistant to denial of service attacks, and have no central authority.
 
-\subsubsection{Identity Recovery}
+\subsubsection{Recoverability}
 
 In the case of a loss of identity, it must be possible to recover gracefully. In order to make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers.
 
 \subsubsection{Security \& Privacy}
 
-In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers. All communications between two parties should be encrypted by default.
+In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers. All communications between two parties should be encrypted by default. The systems must be compatible with existing overlay networks to provide additional security such as Tor.
 
-Source IP address obfuscation -- This can be handled through the use of generalized onion routing networks such as Tor, or a VPN.
+\subsubsection{Permissionless}
 
-Message metadata obfuscation -- If users desire this level of privacy, it can be handled through the used of specialized client software that changes addresses frequently.
-
-\subsubsection{Spam Free}
-
-In order to maintain secure communication, and the decentralized nature of the CashWeb system, spam must be impractical to send large volumes of email by one party. All messages sent should impose a cost on the sender that is paid to the recipient. This ensures that costs are imposed by the sender of the system, and paid to the person who incurs the cost of processing the message.
+While individual software implementation may be privately maintained, the protocol must allow for low barrier entry into the ecosystem. Reference implementations should be provided.
 
 \subsection{Central Concepts}
 
@@ -148,19 +145,19 @@ In order to meet the above requirements for the CashWeb system, the following de
 
 \subsubsection{Cryptocurrency}
 
-One of the central concerns of the CashWeb system is that the cost of messaging be imposed upon the sender. In order to support this requirement, payments need to be at the center of the design.
+In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
 Traditional systems require trusted third parties and complex integrations with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
-Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system.  Most other cryptocurrency systems also do not intend to support volumes on the order of email (sans spam). The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
+Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email (sans spam). The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
-Thus,  Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap perports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
+Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap perports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
 
 Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same key used to send and receive funds can also be used to provide encryption for messages.
 
 \subsubsection{Identity}
 
-Each user identity is pseudonymous, and associated with a public key.  These public identities can be easily an inexpensively generated from a single master key. Each identity key is acknowledged by the network via various small payments to the miners of the Bitcoin Cash network which include a cryptographically verifiable commitment to the identity.
+Each user identity is pseudonymous, and associated with a public key. These public identities can be easily an inexpensively generated from a single master key. Each identity key is acknowledged by the network via various small payments to the miners of the Bitcoin Cash network which include a cryptographically verifiable commitment to the identity.
 
 Additionally, these pseudonyms can be made such that they can be proven to have been derived from another hidden key at a later date. Such proofs enable the specific key associated with a pseudonym to be revoked, and rotated, in a trustless way. This enables the contacts of the pseudonym to be informed without the need for re-establishing trust.
 
@@ -168,7 +165,7 @@ The specific details of these identity schemes are left to further detailed prot
 
 \subsubsection{Message Format}
 
-There are two major open protocols for messaging: XMPP and SMTP/Internet Message Format. Both of these systems were developer without end-to-end encryption in mind, and as such have significant drawbacks which would require workarounds. Additionally, the formats are  pragmatically difficult to interact with -- requiring complex client libraries.
+There are two major open protocols for messaging: XMPP and SMTP/Internet Message Format. Both of these systems were developer without end-to-end encryption in mind, and as such have significant drawbacks which would require workarounds. Additionally, the formats are pragmatically difficult to interact with -- requiring complex client libraries.
 
 Instead of using either of these messaging formats, the CashWeb system uses protobufs. Protobufs are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
@@ -192,11 +189,42 @@ Relay servers provide the combined purpose of both POP and SMTP servers. They ac
 
 \subsubsection{Messaging Client}
 
-An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,   update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
+An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,  update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
 The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
+
+\subsubsection{Protocol Flow}
+
+% \begin{msc}{Message Send}
+%  \declinst{A}{Client }{ }
+%  \declinst{B}{}{ Keyserver }
+%  \declinst{C}{}{ Relay Server }
+%  \declinst{D}{}{ Bitcoind }
+%  \regionstart{activation}{A}
+%  \regionstart{activation}{B}
+%  \mess{GET /keys/\{address\}}{A}{B}
+%  \nextlevel[2]
+%  \mess{AddressMetadata}{B}{A}
+%  \regionend{B}
+%  \nextlevel[1]
+%  \action{Extract Relay IP}{A}
+%  \nextlevel[2]
+%  \regionstart{activation}{C}
+%  \mess{PUT /messages/\{address\}}{A}[0.75]{C}
+%  \nextlevel[1]
+%  \regionstart{activation}{D}
+%  \mess{Stamp Transactions}{C}{D}
+%  \nextlevel[2]
+%  \mess{Accepted}{D}{C}
+%  \regionend{D}
+%  \nextlevel[1]
+%  \mess{Ok}{C}[0.75]{A}
+%  \regionend{A}
+%  \regionend{C}
+%  \nextlevel[1]
+% \end{msc}
 
 \section{Applications}
 
