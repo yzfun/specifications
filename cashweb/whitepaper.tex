@@ -67,7 +67,7 @@ This authority was not taken by force, rather it was given freely to centralized
 % This needs to be fixed
 Two major inconveniences which have driven internet users to abandon their rights are: identifying important communications amongst unsolicited marketing advertisements, and maintaining the address where they receive communications. The design of the CashWeb protocol is centered around restoring user authority over their digital identities and privacy.
 
-\subsection{Why did we Centralize?}
+\subsection{Trends towards Centralization}
 
 % More statistics on how centralized we are right now here to smooth the transition here
 
@@ -81,7 +81,7 @@ As a result of Spam, much of our high-value communications with personal acquain
 
 If a "user" starts producing too much-unwanted content on these systems, the account is restricted or delete, and the pinned phone number or email address is permanently banned. These identifiers are difficult to obtain due to the restrictions around sign-ups placed by email providers, and the cost associated with purchasing a phone number.
 
-\subsubsection{Address Management}
+\subsubsection{Identity Management}
 
 In the early days of the internet, internet service providers (ISPs) also offered email services to their customers. However, when a user moved addresses or wanted to switch service providers, their email address would change due to the reliance on routing information provided within the address (e.g. john.doe@sonic.net). 
 
@@ -107,9 +107,9 @@ The product these companies offer is not actually email, but marketing access to
 
 Some providers still provide paid email access while essentially offering privacy as a product. However, they still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexes and categorized for advertising.
 
-Again, in non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all your other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
+Again, in non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
 
-Indeed, various companies purchase data across multiple services, and collate it based on emails and phone numbers. Devices fingerprinting is also employed to combine this data with your web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
+Indeed, various companies purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
 
 The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
@@ -143,6 +143,10 @@ While individual software implementation may be privately maintained, the protoc
 
 In order to meet the above requirements for the CashWeb system, the following design decisions were made.
 
+\subsubsection{Web Standards}
+
+The CashWeb system adheres to the exstablished web standards to allow quick and easy integration into existing protocols and infrastructure. "Bearer"-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
+
 \subsubsection{Cryptocurrency}
 
 In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
@@ -153,7 +157,7 @@ Unfortunately, the Bitcoin network does not support the transaction volume which
 
 Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap perports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
 
-Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same key used to send and receive funds can also be used to provide encryption for messages.
+Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same keys used to send and receive funds can also be used to provide encryption for messages.
 
 \subsubsection{Identity}
 
@@ -165,21 +169,44 @@ The specific details of these identity schemes are left to further detailed prot
 
 \subsubsection{Message Format}
 
-There are two major open protocols for messaging: XMPP and SMTP/Internet Message Format. Both of these systems were developer without end-to-end encryption in mind, and as such have significant drawbacks which would require workarounds. Additionally, the formats are pragmatically difficult to interact with -- requiring complex client libraries.
-
-Instead of using either of these messaging formats, the CashWeb system uses protobufs. Protobufs are now in wide use, easy to implement in a variety of languages, and serializable to binary.
+For all messages within the CashWeb system use the Protocol Buffer message format. "Protobufs" are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
 \subsection{Components}
 
 \subsubsection{Keyservers}
 
-The CashWeb protocol includes a set of keyservers which provide a cryptographically secure shared-everything key-value store. The store is intended to track small amounts of information associated with cryptographic keys. Each record is recorded by a hash of a public key. The payloads then include the public key, an array of metadata about the public key, and a signature attesting that the record was produced by a user controlling the associated public key.
+The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The store is intended to track small amounts of metadata associated with cryptographic keys. This metadata is indexed by the hash of ones public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repuditation. Metadata updates are permissioned by providing valid signatures.
 
-The choice to use a specialized keyserver, over existing GPG infrastructure, is to build in anti-DDoS mechanisms from the start. Keys are updated based on the ability to sign messages associated with a public key's record. Additionally, the protocol is based on HTTP2 which makes it significantly simpler to interact with, to live behind off-the-shelf load balancers. Additionally, the payload format is simpler than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
+% \begin{msc}[c]{Metadata Upload}
+%   \declinst{A}{}{ Client }
+%   \declinst{B}{}{ Keyserver }
+%   \regionstart{activation}{B}
+%   \mess{PUT /keys/\{address\} with Metdata \& Token}{A}{B}
+%   \nextlevel[2]
+%   \mess{Ok}{B}{A}
+%   \regionend{B}
+%   \nextlevel[1]
+% \end{msc}
 
-Generally, these records will include an entry with information about which relay servers the user is monitoring for messages. Additionally, the also host a vCard, allowing for the secure advertising of a variety of other communication channels based on a single QR code. Other use cases are also possible in the future.
+% \begin{msc}[c]{Metadata Retrieval}
+%   \declinst{A}{}{ Client }
+%   \declinst{B}{}{ Keyserver }
+%   \regionstart{activation}{B}
+%   \mess{GET /keys/\{address\}}{A}{B}
+%   \nextlevel[2]
+%   \mess{Metadata \& Token}{B}{A}
+%   \regionend{B}
+%   \nextlevel[1]
+% \end{msc}
 
-Another possible functionality would be revocations of keys in the event that your private key is lost. It is possible to generate the keys used for identities such that you can revoke, and notify contacts automatically, of a new key. This allows for key-rotation on Bitcoin, which has been a significant deficiency in cryptocurrencies since the Bitcoin whitepaper was written.
+The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
+* Anti-DDoS mechanisms are considered from inception and hence we can arrive at a more simple and robust overall design.
+* HTTP2 makes it significantly simpler to interact with, for example, it is immediately compatible with off-the-shelf load balancers.
+* The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
+
+The CashWeb keyserver can be used for a wide-range of applications (which are elluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages.
+
+Another possible functionality would be revocations of keys in the event that ones private key is lost. It is possible to generate the keys used for identities such that you can revoke, and notify contacts automatically, of a new key. This allows for key-rotation on Bitcoin, which has been a significant deficiency in cryptocurrencies since the Bitcoin whitepaper was written.
 
 It is also within the realm of possibility to advertise a URLs for DApps. This would enable downloading Dapps into the wallet, running them in a secure VM.
 
@@ -189,7 +216,7 @@ Relay servers provide the combined purpose of both POP and SMTP servers. They ac
 
 \subsubsection{Messaging Client}
 
-An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages,  update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
+An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
 The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are relatively ignorant as to the protocols that wallets may use to talk to each other.
 
@@ -227,6 +254,14 @@ This allows the functionality to evolve gracefully over time without needing maj
 % \end{msc}
 
 \section{Applications}
+
+\subsection{Keyserver Infrastructure}
+
+The keyserver network can be used as a standalone...
+
+\subsection{CashWeb Infrastructure}
+
+
 
 \section{Conclusion}
 
