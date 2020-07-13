@@ -15,6 +15,13 @@
 \usepackage{microtype}   % microtypography
 \usepackage{lipsum}
 \usepackage{msc}
+\usepackage{float}
+
+\drawframe{no}
+\setlength{\instdist}{5cm}
+\setlength{\instwidth}{2.5cm}
+\setlength{\envinstdist}{3cm}
+\setlength{\actionwidth}{3.5cm}
 
 \usepackage{draftwatermark}
 \SetWatermarkText{Draft}
@@ -131,52 +138,17 @@ In order to meet the above requirements for the CashWeb system, the following de
 
 \subsubsection{Web Standards}
 
-The CashWeb system adheres to the exstablished web standards to allow quick and easy integration into existing protocols and infrastructure. "Bearer"-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
-
-The primary payment method used across CashWeb services is 
-
-% \begin{msc}[c]{Proof-of-Payment Protocol Flow}
-%   \declinst{A}{}{ Client }
-%   \declinst{B}{}{ Resource Merchant }
-%   \declinst{C}{}{ Payment Server }
-%   \declinst{D}{}{ Bitcoin Node }
-%   \declinst{E}{}{ Resource Server }
-%   \regionstart{activation}{A}
-%   \regionstart{activation}{B}
-%   \mess{Authorization Request}{A}{B}
-%   \nextlevel[2]
-%   \mess{Payment Request}{B}{A}
-%   \regionend{B}
-%   \nextlevel[2]
-%   \regionstart{activation}{C}
-%   \mess{Payment}{A}[.75]{C}
-%   \nextlevel
-%   \regionstart{activation}{D}
-%   \mess{Transaction}{A}[.833]{D}
-%   \nextlevel[2]
-%   \mess{Accepted}{D}{C}
-%   \regionend{D}
-%   \nextlevel[2]
-%   \regionend{C}
-%   \mess{PaymentAck \& Token}{C}[.75]{A}
-%   \nextlevel[2]
-%   \regionstart{activation}{E}
-%   \mess{Request \& Token}{A}[.875]{E}
-%   \nextlevel[2]
-%   \mess{Response}{E}[.875]{A}
-%   \regionend{E}
-%   \regionend{A}
-% \end{msc}
+The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. "Bearer"-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
 
 \subsubsection{Cryptocurrency}
 
 In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integrations with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
 Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email (sans spam). The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
-Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap perports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
+Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap purports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
 
 Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same keys used to send and receive funds can also be used to provide encryption for messages.
 
@@ -198,31 +170,10 @@ For all messages within the CashWeb system use the Protocol Buffer message forma
 
 The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The store is intended to track small amounts of metadata associated with cryptographic keys. This information stored on the keyservers is replicated across the network to provide censorship resistance. A peer-to-peer protocol is included which provides eventual consistency.
 
-This metadata is indexed by the hash of ones public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repuditation. Metadata updates are permissioned by providing valid signatures.
+This metadata is indexed by the hash of ones public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
 
-% \begin{msc}[c]{Metadata Upload}
-%   \declinst{A}{}{ Client }
-%   \declinst{B}{}{ Keyserver }
-%   \regionstart{activation}{B}
-%   \mess{PUT /keys/\{address\} with Metdata \& Token}{A}{B}
-%   \nextlevel[2]
-%   \mess{Ok}{B}{A}
-%   \regionend{B}
-%   \nextlevel[1]
-% \end{msc}
 
-% \begin{msc}[c]{Metadata Retrieval}
-%   \declinst{A}{}{ Client }
-%   \declinst{B}{}{ Keyserver }
-%   \regionstart{activation}{B}
-%   \mess{GET /keys/\{address\}}{A}{B}
-%   \nextlevel[2]
-%   \mess{Metadata \& Token}{B}{A}
-%   \regionend{B}
-%   \nextlevel[1]
-% \end{msc}
-
-Uploading data to the keyserver is protected by a specific version of the "Proof-of-Payment protocol" (POP protocol) outlined above. This provides a way to anchor onchain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
+Uploading data to the keyserver is protected by a specific version of the "Proof-of-Payment protocol" (POP protocol) outlined above. This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 \itemize{
@@ -231,7 +182,7 @@ The specialised CashWeb keyserver has the following benefits over existing GPG i
   \item The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
 }
 
-The CashWeb keyserver can be used for a wide-range of applications (which are elluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
+The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
 
 Another possible functionality would be revocations of keys in the event that ones private key is lost. It is possible to generate the keys used for identities such that you can revoke, and notify contacts automatically, of a new key. This allows for key-rotation on Bitcoin, which has been a significant deficiency in cryptocurrencies since the Bitcoin whitepaper was written.
 
@@ -240,7 +191,7 @@ Another possible functionality would be revocations of keys in the event that on
 Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
 The distinction here between keyservers and relay servers is made due to seperation of concerns:
-* Keyservers provide replication and therefore censorship-resistance for small amounts of unencryptd data.
+* Keyservers provide replication and therefore censorship-resistance for small amounts of unencrypted data.
 * Relay servers do not provide replication and therefore can cheaply host large amounts of encrypted personal data.
 
 Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. Unlike the keyserver, the specific implementation of the POP token protocol is not enforced due to lack of replication. Clients supporting the POP token protocol should be agnostic to any variations of implementation across relay servers, this allows relay servers to provide a variety of hosting plans.
@@ -255,56 +206,66 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsubsection{Protocol Flow}
 
-% \begin{msc}[c]{Profile Retrieval}
-%   \declinst{A}{}{ Client }
-%   \declinst{B}{}{ Keyserver }
-%   \declinst{C}{}{ Relay Server }
-%   \regionstart{activation}{A}
-%   \regionstart{activation}{B}
-%   \mess{GET /keys/\{address\}}{A}{B}
-%   \nextlevel[2]
-%   \mess{Metadata}{B}{A}
-%   \regionend{B}
-%   \nextlevel[1]
-%   \action{Extract Relay IP}{A}
-%   \nextlevel[2]
-%   \regionstart{activation}{C}
-%   \mess{GET /profiles/\{address\}}{A}[0.75]{C}
-%   \nextlevel[2]
-%   \mess{Profile}{C}[0.75]{A}
-%   \regionend{A}
-%   \regionend{C}
-%   \nextlevel[1]
-% \end{msc}
+\begin{figure}[H]
+\centering
+\scalebox{.75}{
+    \begin{msc}[c]{Profile Retrieval}
+      \declinst{A}{}{ Client }
+      \declinst{B}{}{ Keyserver }
+      \declinst{C}{}{ Relay Server }
+      \regionstart{activation}{A}
+      \regionstart{activation}{B}
+      \mess{GET /keys/\{address\}}{A}{B}
+      \nextlevel[2]
+      \mess{Metadata}{B}{A}
+      \regionend{B}
+      \nextlevel[1]
+      \action{Extract Relay IP}{A}
+      \nextlevel[2]
+      \regionstart{activation}{C}
+      \mess{GET /profiles/\{address\}}{A}[0.75]{C}
+      \nextlevel[2]
+      \mess{Profile}{C}[0.75]{A}
+      \regionend{A}
+      \regionend{C}
+      \nextlevel[1]
+    \end{msc}
+    }
+\end{figure}
 
-% \begin{msc}{Message Send}
-%  \declinst{A}{Client }{ }
-%  \declinst{B}{}{ Keyserver }
-%  \declinst{C}{}{ Relay Server }
-%  \declinst{D}{}{ Bitcoin Node }
-%  \regionstart{activation}{A}
-%  \regionstart{activation}{B}
-%  \mess{GET /keys/\{address\}}{A}{B}
-%  \nextlevel[2]
-%  \mess{AddressMetadata}{B}{A}
-%  \regionend{B}
-%  \nextlevel[1]
-%  \action{Extract Relay IP}{A}
-%  \nextlevel[2]
-%  \regionstart{activation}{C}
-%  \mess{PUT /messages/\{address\}}{A}[0.75]{C}
-%  \nextlevel[1]
-%  \regionstart{activation}{D}
-%  \mess{Stamp Transactions}{C}{D}
-%  \nextlevel[2]
-%  \mess{Accepted}{D}{C}
-%  \regionend{D}
-%  \nextlevel[1]
-%  \mess{Ok}{C}[0.75]{A}
-%  \regionend{A}
-%  \regionend{C}
-%  \nextlevel[1]
-% \end{msc}
+\begin{figure}[H]
+\centering
+\scalebox{.75}{
+    \begin{msc}[c]{Message Send}
+     \declinst{A}{ }{ Client }
+     \declinst{B}{}{ Keyserver }
+     \declinst{C}{}{ Relay Server }
+     \declinst{D}{}{ Bitcoin Node }
+     \regionstart{activation}{A}
+     \regionstart{activation}{B}
+     \mess{GET /keys/\{address\}}{A}{B}
+     \nextlevel[2]
+     \mess{AddressMetadata}{B}{A}
+     \regionend{B}
+     \nextlevel[1]
+     \action{Extract Relay IP}{A}
+     \nextlevel[2]
+     \regionstart{activation}{C}
+     \mess{PUT /messages/\{address\}}{A}[0.75]{C}
+     \nextlevel[1]
+     \regionstart{activation}{D}
+     \mess{Stamp Transactions}{C}{D}
+     \nextlevel[2]
+     \mess{Accepted}{D}{C}
+     \regionend{D}
+     \nextlevel[1]
+     \mess{Ok}{C}[0.75]{A}
+     \regionend{A}
+     \regionend{C}
+     \nextlevel[1]
+    \end{msc}
+}
+\end{figure}
 
 \section{Applications}
 
