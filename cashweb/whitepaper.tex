@@ -1,8 +1,10 @@
 \documentclass{article}
 
+\usepackage{savesym}
 \usepackage{arxiv}
 \usepackage{amsthm}
 \usepackage{physics}
+\savesymbol{order}
 \usepackage{url}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
@@ -14,8 +16,9 @@
 \usepackage{nicefrac}    % compact symbols for 1/2, etc.
 \usepackage{microtype}   % microtypography
 \usepackage{lipsum}
-\usepackage{msc}
 \usepackage{float}
+\usepackage{msc}
+\restoresymbol{PHYS}{iint}
 
 \drawframe{no}
 \setlength{\instdist}{5cm}
