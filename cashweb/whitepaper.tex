@@ -49,51 +49,51 @@ CashWeb is a suite of protocols providing an open messaging standard with a refe
 
 \subsection{History}
 
-Many early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were envisioned as decentralized platforms for this purpose.
+Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were built as decentralized platforms for this purpose.
 
-However, due to the economics of network messaging the cost of message processing is placed on the recipient with respect to processing power, storage, and mental attention. We are increasingly relying on centralized systems to identify and filter these messages. Users delegated authority over their online identities and communications to third-parties in exchange for convenience. As a result, a loss of user privacy and control over online identities has occured.
+However, due to the economics of network messaging, the cost of message processing is placed on the recipient with respect to processing power, storage, and mental attention. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third-parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
 
-As of June 2017, Facebook reported 2 billion users. By October 2018, GMail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}, June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably, and honestly, manage critical internet services.
+As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services.
 
-The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the advent of Bitcoin, it is possible to construct decentralized systems which do provide these conveniences. The CashWeb protocols are centered around leveraging cryptocurrency to provide seemless online experiences -- thus restoring user authority over their digital identities and privacy. 
+The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the developemnt of Bitcoin, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seemless online experiences -- thus restoring user authority over their digital identities and privacy. 
 
 \subsection{Forces of Centralization}
 
 \subsubsection{Identity Management}
 
-In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using an email accounts provided by global companies like Google, and Microsoft, enabled users to avoid the effort associated with updating their contacts -- and potentially missing valuable communications.
+In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using an email accounts provided by global companies like Google and Microsoft enabled users to avoid the effort associated with updating their contacts and potentially missing valuable communications.
 
-Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. Now, loss of access to our email has become a life-altering event with significant consequences. Such a loss may result due to a compromised password, or a judgement by the provider. 
+Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
 
-Additionally, should we now want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable.
+Should we now want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable.
 
 \subsubsection{Spam}
 
 While email was envisioned as a person-to-person and machine-to-machine messaging system, the vast majority of emails are now machine-to-human. These messages largely consist of useless advertisements, but require processing power and human attention to evaluate and identify for deletion. Large-scale centralized email providers (e.g. Gmail\footnote{\url{https://mail.google.com}} and Hotmail\footnote{\url{https://outlook.live.com}}) benefit from their message volume by being able to identify similar messages sent to a large number of different customers and filter them out.
 
-Ironically, companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by these centralized platforms despite the original promise of these platforms to provide users with only high-value communications. Email is now only a historical record for our business notifications.
+Ironically companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by centralized platforms despite the original promise of these platforms to provide users with only high-value communications.
 
-As a result, much of our high-value communications with personal acquaintances have moved to other digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. However, in order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account.
+At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. In order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account.
 
-If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The pinned phone number, or email address, is permanently banned. These identifiers are difficult to obtain due to the restrictions around sign-ups placed by email providers, and the cost associated with purchasing a phone number.
+If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The identifying phone number or email address is permanently banned.
 
 \subsubsection{Consequences}
 
-While large services have provided us with much-needed convenience, and enabled less-technical individuals to participate in the Internet, centralized providers must also generate revenue to maintain their infrastructure and generate a profit. As such, many of these services provide access to email, and websites, for ``free.'' However, ``if you're not paying for the product, you are the product.''
+While large services have provided us with much-needed convenience, centralized providers must also generate revenue to maintain their infrastructure and generate a profit. Many of these services provide access to email and websites for ``free.'' However, as the saying goes, ``if you're not paying for the product, you are the product.''
 
-Some providers still provide paid email access while essentially offering privacy as a product. However, they still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexes and categorized for advertising.
+Some providers still provide paid email access while essentially offering privacy as a product. However, these providers still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexes and categorized for advertising.
 
-Again, in non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
+In non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
 
-Indeed, various companies (e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
+Indeed, various companies (e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history while also providing a way to associate email addresses and phone numbers should users log in to two different accounts during the same session.
 
-The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
+The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want, however, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
 \section{The CashWeb Protocol}
 
 \subsection{Philosophy}
 
-In order to provide an alternative to the existing system we adhere to the following principles:
+In order to provide an alternative to the existing system Cashweb adhere's to the following principles:
 
 \subsubsection{Simplicity}
 
@@ -101,7 +101,7 @@ In order to support the needs of non-technical users, CashWeb must be a solution
 
 \subsubsection{Migratability}
 
-Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. This requires a name resolution system which is distributed in nature. A functional name resolution system must be resistant to denial of service attacks, and have no central authority which can censor particular identities.
+Users must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. This requires a name resolution system which is distributed in nature. A functional name resolution system must be resistant to denial of service attacks and have no central authority which can censor particular identities.
 
 \subsubsection{Recoverability}
 
@@ -109,7 +109,7 @@ In the case of a loss of identity, it must be possible to recover gracefully. In
 
 \subsubsection{Security \& Privacy}
 
-In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers. All communications between two parties should be encrypted by default. The systems must be compatible with existing overlay networks to provide additional security such as Tor.
+In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default. The systems must be compatible with existing overlay networks to provide additional security such as Tor.
 
 \subsubsection{Permissionlessness}
 
@@ -125,7 +125,7 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 \subsubsection{Cryptocurrency}
 
-In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
+In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
 Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
