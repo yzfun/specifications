@@ -39,7 +39,7 @@ CashWeb is a suite of protocols providing an open messaging standard with a refe
 
 Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were built as decentralized platforms for this purpose.
 
-However, due to the economics of network messaging, the cost of message processing is placed on the recipient with respect to processing power, storage, and mental attention. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third-parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
+However, due to the economics of network messaging, the cost of message processing is placed on the recipient with respect to processing power, storage, and mental attention. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
 
 As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services.
 
@@ -49,7 +49,9 @@ The centralization of the internet into a few large platforms, while providing t
 
 \subsubsection{Identity Management}
 
-In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using an email accounts provided by global companies like Google and Microsoft enabled users to avoid the effort associated with updating their contacts and potentially missing valuable communications.
+In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using email accounts provided by global companies, like Google and Microsoft, enabled users to avoid the effort associated with updating their contacts and potentially missing valuable communications.
+
+% more stable?
 
 Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
 
@@ -66,6 +68,8 @@ At the same time, much of our high-value communications with personal acquaintan
 If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The identifying phone number or email address is permanently banned.
 
 \subsubsection{Consequences}
+
+% Quote block here with the quote
 
 While large services have provided us with much-needed convenience, centralized providers must also generate revenue to maintain their infrastructure and generate a profit. Many of these services provide access to email and websites for ``free.'' However, as the saying goes, ``if you're not paying for the product, you are the product.''
 
@@ -85,11 +89,13 @@ In order to provide an alternative to the existing system, Cashweb adhere's to t
 
 \subsubsection{Simplicity}
 
-In order to support the needs of non-technical users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third-party providers which provide hosting, and operation, of various services.
+In order to attract a wide-range of users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third parties to provide hosting and operation of services for those uninterested in provisioning their own hardware.
+
+Similarly, the base protocol must be as simple as possible to attract a wide-range of developers.
 
 \subsubsection{Migratability}
 
-Users must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. This requires a name resolution system which is distributed in nature. A functional name resolution system must be resistant to denial of service attacks and have no central authority which can censor particular identities.
+Users must have control over access to their own identities, and the ability to migrate from one service provider to another. The ability to easily migrate between service providers enables users to hold service providers accountable for their actions and fosters healthy competition.
 
 \subsubsection{Recoverability}
 
@@ -97,15 +103,19 @@ In the case of a loss of identity, it must be possible to recover gracefully. In
 
 \subsubsection{Security \& Privacy}
 
-In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default. The systems must be compatible with existing overlay networks to provide additional security such as Tor.
+In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default.
+
+In addition to the strong default security, users must be able to upgrade their security using existing overlay networks (e.g. Tor).
 
 \subsubsection{Permissionlessness}
 
-While individual software implementation may be privately maintained, the protocol must offer a low barrier of entry into the ecosystem. Reference implementations should be provided.
+The protocol must be open-source and well-maintained reference implementations/documentation should be provided. This model provides easy access to potential developers and will allow growth in the ecosystem surrounding CashWeb.
+
+While the base protocol is open and publicly maintained, individual software implementations may be privately maintained.
 
 \subsection{Central Concepts}
 
-In order to meet the above requirements for the CashWeb system, the following design decisions were made.
+In order to meet the requirements described above, CashWeb protocol revolves around the following core concepts:
 
 \subsubsection{Web Standards}
 
@@ -115,13 +125,13 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through "reusable proof of work" (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+
+Using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure, open, permissionless communication. The same keys may be used to send and receive funds can also be used to provide encryption for messages.
 
 Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email (sans spam). The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
-Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The roadmap purports to desire to support the majority of payments on earth. Also, It uses a proof-of-work with no central issuing authority for tokens issuance.
-
-Additionally, using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure communication requirement. The same keys used to send and receive funds can also be used to provide encryption for messages.
+Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The Bitcoin Cash roadmap stresses the importance of instant transactions accomplished on a global scale while building on the tokenized proof-of-work conceptualized by Satoshi Nakamoto.
 
 \subsubsection{Identity}
 
