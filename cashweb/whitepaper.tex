@@ -87,13 +87,13 @@ In non-email systems, our identity is increasingly tied to our email or phone nu
 
 Indeed, various companies (e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history while also providing a way to associate email addresses and phone numbers should users log in to two different accounts during the same session.
 
-The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want, however, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
+The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, the are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
 \section{The CashWeb Protocol}
 
 \subsection{Philosophy}
 
-In order to provide an alternative to the existing system Cashweb adhere's to the following principles:
+In order to provide an alternative to the existing system, Cashweb adhere's to the following principles:
 
 \subsubsection{Simplicity}
 
@@ -151,7 +151,7 @@ For all messages within the CashWeb system use the Protocol Buffer message forma
 
 The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The registry is intended to track small amounts of metadata associated with cryptographic keys. Each entry in the keyservers is replicated across the network to provide censorship resistance. A peer-to-peer protocol is included which provides eventual consistency.
 
-This metadata is indexed by the hash of ones public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
+This metadata is indexed by the hash of one's public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
 
 Uploading data to the keyserver is protected by a "Proof-of-Payment protocol" (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
@@ -251,11 +251,11 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsection{Standardized Authorization \& Authentication}
 
-The Proof-Of-Payment (POP) protocol enables the standardized. and seemless, use of HTTP APIs as traditionally used in the technology industry, but without the use of complicated billing infrastructure and account management. It allows the purchasing pseudnonymously of a JWT API token, without requiring accounts, billing frontends, or other complicated infrastructure.
+The Proof-Of-Payment (POP) protocol enables the standardized. and seemless, use of HTTP APIs as traditionally used in the technology industry, but without the use of complicated billing infrastructure and account management. It allows the purchasing pseudonymously of a JWT API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
 
 \subsection{Distributed Identity Management}
 
-Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation, and rotation events, for end-users. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral indetity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
+Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation, and rotation events, for end-users. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral identity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
 
 \subsection{Open Messaging}
 
@@ -263,7 +263,7 @@ The combination of the POP protocol, keyservers, and relay servers, allows for a
 
 \section{Conclusion}
 
-The CashWeb protocols aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging.
+The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging.
 
 Attaching payments to P2P communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued "walled-garden" communications networks.
 
