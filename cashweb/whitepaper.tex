@@ -25,6 +25,9 @@
 \setlength{\envinstdist}{3cm}
 \setlength{\actionwidth}{3.5cm}
 
+\usepackage{draftwatermark}
+\SetWatermarkText{Draft}
+
 \title{CashWeb}
 
 \author{
@@ -153,11 +156,11 @@ This metadata is indexed by the hash of ones public key and includes said public
 Uploading data to the keyserver is protected by a "Proof-of-Payment protocol" (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
-\itemize{
+\begin{itemize}
   \item Anti-DDoS mechanisms are considered from inception and hence we can arrive at a more simple and robust overall design.
   \item HTTP2 makes it significantly simpler to interact with, for example, it is immediately compatible with off-the-shelf load balancers.
   \item The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
-}
+\end{itemize}
 
 The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
 
