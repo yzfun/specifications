@@ -76,13 +76,13 @@ If an account starts producing too much unwanted content on these systems, the a
 
 \subsubsection{Consequences}
 
-While large services have provided us with much-needed convenience, and enabled less-technical individuals to participate in the Itnernet, centralized providers must also generate revenue to maintain their infrastructure and generate a profit. As such, many of these services provide access to email, and websites, for ``free.'' However, ``if you're not paying for the product, you are the product.''
+While large services have provided us with much-needed convenience, and enabled less-technical individuals to participate in the Internet, centralized providers must also generate revenue to maintain their infrastructure and generate a profit. As such, many of these services provide access to email, and websites, for ``free.'' However, ``if you're not paying for the product, you are the product.''
 
 Some providers still provide paid email access while essentially offering privacy as a product. However, they still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexes and categorized for advertising.
 
 Again, in non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
 
-Indeed, various companies(e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
+Indeed, various companies (e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history. Device fingerprints also provide a way to associate email addresses and phone numbers should users log in to two different accounts during the same session or on the same computer.
 
 The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
@@ -98,7 +98,7 @@ In order to support the needs of non-technical users, CashWeb must be a solution
 
 \subsubsection{Migratability}
 
-Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. A name resolution system which is distributed in nature. The name resolution system must be resistant to denial of service attacks, and have no central authority.
+Users of the CashWeb system must have control over access to their own identities, and the ability to migrate from one service provider to another. This enables them to hold service providers accountable for their actions. This requires a name resolution system which is distributed in nature. A functional name resolution system must be resistant to denial of service attacks, and have no central authority which can censor particular identities.
 
 \subsubsection{Recoverability}
 
@@ -108,9 +108,9 @@ In the case of a loss of identity, it must be possible to recover gracefully. In
 
 In order to protect the privacy of users, the contents of messages must not be readable by third parties, including CashWeb service providers. All communications between two parties should be encrypted by default. The systems must be compatible with existing overlay networks to provide additional security such as Tor.
 
-\subsubsection{Permissionless}
+\subsubsection{Permissionlessness}
 
-While individual software implementation may be privately maintained, the protocol must allow for low barrier entry into the ecosystem. Reference implementations should be provided.
+While individual software implementation may be privately maintained, the protocol must offer a low barrier of entry into the ecosystem. Reference implementations should be provided.
 
 \subsection{Central Concepts}
 
@@ -122,7 +122,7 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 \subsubsection{Cryptocurrency}
 
-In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
+In order to maintain secure communication, and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
 Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries like Hal Finney conceived of this problem being solved through "reusable proof of work" (RPoW). However, his original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
@@ -134,11 +134,9 @@ Additionally, using a cryptocurrency, instead of traditional banking integration
 
 \subsubsection{Identity}
 
-Each user identity is pseudonymous, and associated with a public key. These public identities can be easily an inexpensively generated from a single master key. Each identity key is acknowledged by the network via various small payments to the miners of the Bitcoin Cash network which include a cryptographically verifiable commitment to the identity.
+Each user identity is pseudonymous, and associated with a public key. These public identities can be easily and inexpensively generated from a single master key. Each identity key is acknowledged by the network via various small payments to the miners of the Bitcoin Cash network. These small payments include a cryptographically verifiable commitment to the identity which can provide proof that the payment was made to any third party.
 
-Additionally, these pseudonyms can be made such that they can be proven to have been derived from another hidden key at a later date. Such proofs enable the specific key associated with a pseudonym to be revoked, and rotated, in a trustless way. This enables the contacts of the pseudonym to be informed without the need for re-establishing trust.
-
-The specific details of these identity schemes are left to further detailed protocol specifications, and the protocol is extensible to future schemes should a need arise.
+Additionally, these pseudonyms can be made such that they can be proven to have been derived from another hidden key at a later date. Such proofs enable the specific key associated with a pseudonym to be revoked, and rotated, in a trustless way. This enables the contacts of the pseudonym to be informed without the need for re-establishing trust. The specific details of these identity schemes are left to further detailed protocol specifications, and the protocol is extensible to future schemes should a need arise.
 
 \subsubsection{Message Format}
 
@@ -148,12 +146,11 @@ For all messages within the CashWeb system use the Protocol Buffer message forma
 
 \subsubsection{Keyservers}
 
-The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The store is intended to track small amounts of metadata associated with cryptographic keys. This information stored on the keyservers is replicated across the network to provide censorship resistance. A peer-to-peer protocol is included which provides eventual consistency.
+The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The registry is intended to track small amounts of metadata associated with cryptographic keys. Each entry in the keyservers is replicated across the network to provide censorship resistance. A peer-to-peer protocol is included which provides eventual consistency.
 
 This metadata is indexed by the hash of ones public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
 
-
-Uploading data to the keyserver is protected by a specific version of the "Proof-of-Payment protocol" (POP protocol) outlined above. This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
+Uploading data to the keyserver is protected by a "Proof-of-Payment protocol" (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 \itemize{
@@ -164,17 +161,17 @@ The specialised CashWeb keyserver has the following benefits over existing GPG i
 
 The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
 
-Another possible functionality would be revocations of keys in the event that ones private key is lost. It is possible to generate the keys used for identities such that you can revoke, and notify contacts automatically, of a new key. This allows for key-rotation on Bitcoin, which has been a significant deficiency in cryptocurrencies since the Bitcoin whitepaper was written.
+Another function of keyservers is to provide revocations of keys in the event that a user loses their on-line private key. The keyservers enable the publication of new keys to existing contacts in a trustless manner. This allows for key-rotation on Bitcoin, which has been a significant deficiency in all cryptocurrencies since the Bitcoin whitepaper was written.
 
 \subsubsection{Relay Servers}
 
 Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
 The distinction here between keyservers and relay servers is made due to seperation of concerns:
-* Keyservers provide replication and therefore censorship-resistance for small amounts of unencrypted data.
-* Relay servers do not provide replication and therefore can cheaply host large amounts of encrypted personal data.
+* Keyservers provide global replication and therefore censorship-resistance for small amounts of unencrypted data.
+* Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
 
-Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. Unlike the keyserver, the specific implementation of the POP token protocol is not enforced due to lack of replication. Clients supporting the POP token protocol should be agnostic to any variations of implementation across relay servers, this allows relay servers to provide a variety of hosting plans.
+Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. By using a standardized authentication and authorization mechanism, along with the global keyserver network, users can easily migrate between relay service providers should they choose.
 
 \subsubsection{Messaging Client}
 
@@ -249,17 +246,17 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \section{Applications}
 
-\subsection{Proof-of-Payment Protocol}
+\subsection{Standardized Authorization \& Authentication}
 
 The Proof-Of-Payment (POP) protocol enables the standardized. and seemless, use of HTTP APIs as traditionally used in the technology industry, but without the use of complicated billing infrastructure and account management. It allows the purchasing pseudnonymously of a JWT API token, without requiring accounts, billing frontends, or other complicated infrastructure.
 
-\subsection{Keyserver Infrastructure}
+\subsection{Distributed Identity Management}
 
-Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation, and rotation events, for end-users. It provides a comprehensive mechanism for managing an online identity.
+Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation, and rotation events, for end-users. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral indetity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
 
-\subsection{CashWeb Infrastructure}
+\subsection{Open Messaging}
 
-The combination of the POP protocol, keyservers, and relay servers, allows for advanced privacy features and SPAM-free communication. The ability to send structured messages with attached value, allows for all kinds of fee-based machine-to-machine message queue processing. The most obvious application of this is peer to peer payments and messaging. However, the potential for other interesting services such as robots, which exchange value as well as information, can be imagined.
+The combination of the POP protocol, keyservers, and relay servers, allows for advanced privacy features and SPAM-free communication. The ability to send structured messages with attached value, allows for all kinds of fee-based human-to-human, human-to-machine, machine-to-human, and machine-to-machine message processing. The most obvious application of this is peer to peer payments and messaging. However, the potential for other interesting services such as robots, which exchange value as well as information, can be imagined.
 
 \section{Conclusion}
 
