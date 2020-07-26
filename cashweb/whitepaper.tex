@@ -43,7 +43,7 @@ However, due to the economics of network messaging, the cost of message processi
 
 As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services.
 
-The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the developemnt of Bitcoin, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seemless online experiences -- thus restoring user authority over their digital identities and privacy. 
+The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the developemnt of Bitcoin\cite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seemless online experiences -- thus restoring user authority over their digital identities and privacy. 
 
 \subsection{Forces of Centralization}
 
@@ -113,7 +113,7 @@ The protocol must be open-source and well-maintained reference implementations/d
 
 While the base protocol is open and publicly maintained, individual software implementations may be privately maintained.
 
-\subsection{Central Concepts}
+\subsection{Central Concepts} % This should have better name?
 
 In order to meet the requirements described above, CashWeb protocol revolves around the following core concepts:
 
@@ -125,11 +125,11 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through "reusable proof of work" (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through "reusable proof-of-work" (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
 Using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure, open, permissionless communication. The same keys may be used to send and receive funds can also be used to provide encryption for messages.
 
-Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email (sans spam). The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
+Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email, ignoring spam. The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
 Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The Bitcoin Cash roadmap stresses the importance of instant transactions accomplished on a global scale while building on the tokenized proof-of-work conceptualized by Satoshi Nakamoto.
 
@@ -143,13 +143,13 @@ Additionally, these pseudonyms can be made such that they can be proven to have 
 
 For all messages within the CashWeb system use the Protocol Buffer message format. "Protobufs" are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
-\subsection{Components}
+\subsection{Infrastructure}
 
 \subsubsection{Keyservers}
 
 The CashWeb protocol includes a network of keyservers which provide a public \& distributed metadata registry. The registry is intended to track small amounts of metadata associated with cryptographic keys. Each entry in the keyservers is replicated across the network to provide censorship resistance. A peer-to-peer protocol is included which provides eventual consistency.
 
-This metadata is indexed by the hash of one's public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
+This metadata is indexed by the hash of users public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
 
 Uploading data to the keyserver is protected by a "Proof-of-Payment protocol" (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
@@ -178,7 +178,7 @@ Uploading to, and pulling messages from, the relay server should be protected by
 
 An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
-The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part ignorant as to the protocols that wallets may use to talk to each other.
+The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
@@ -251,11 +251,11 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsection{Standardized Authorization \& Authentication}
 
-The Proof-Of-Payment (POP) protocol enables the standardized. and seemless, use of HTTP APIs as traditionally used in the technology industry, but without the use of complicated billing infrastructure and account management. It allows the purchasing pseudonymously of a JWT API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
+The Proof-Of-Payment (POP) protocol enables the standardized and seemless use of existing HTTP technology, but without the use of complicated billing infrastructure and account management. It allows the pseudonymously purchase of a JWT API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
 
 \subsection{Distributed Identity Management}
 
-Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation, and rotation events, for end-users. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral identity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
+Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation and rotation events. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral identity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
 
 \subsection{Open Messaging}
 
@@ -265,10 +265,9 @@ The combination of the POP protocol, keyservers, and relay servers, allows for a
 
 The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging.
 
-Attaching payments to P2P communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued "walled-garden" communications networks.
+Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued "walled-garden" communications networks.
 
 Digital currency combined with messaging, as originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is truly valuable.
-\cite{nakamoto2008bpp}
 
 \bibliographystyle{unsrt}
 \bibliography{citations}
