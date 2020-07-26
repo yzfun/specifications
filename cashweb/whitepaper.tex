@@ -26,24 +26,27 @@
  \And
  Harry Barber \\
  \texttt{harry.barber@cashweb.io} \\
+ \And
+ David Schlesinger \\
+ \texttt{david@cashweb.io} \\
 }
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-CashWeb is a suite of protocols providing an open messaging standard with a reference implementation called ``Stamp''. It uses a federated network topology, similar to XMPP and SMTP, to provide its scaling characteristics. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
+CashWeb is a suite of protocols providing an open messaging standard with a reference implementation called ``Stamp''. It uses a federated network topology, similar to XMPP and SMTP, to provide the the necessary scaling characteristics to replace those technologies. There is an estimated 300 billion emails sent each day as of 2020\cite{emailssent2020}. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
 \end{abstract}
 
 \section{Introduction}
 
 \subsection{History}
 
-Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were built as decentralized platforms for this purpose.
+Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas, and receiving feedback. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were built as decentralized platforms for this purpose.
 
-However, due to the economics of network messaging, the cost of message processing is placed on the recipient with respect to processing power, storage, and mental attention. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
+However, due to the inherint design limitations of these systems, it is significantly more costly to receive messages than to send them. The expense of message processing is placed on the recipient with respect to processing power, long-term storage, and mental attention. This incentivizes the sending large volumes of low-value messages. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
 
-As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services.
+As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services. Critical services which are not the source of revenue for these companies.
 
 The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the developemnt of Bitcoin\cite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seemless online experiences -- thus restoring user authority over their digital identities and privacy. 
 
@@ -53,9 +56,9 @@ The centralization of the internet into a few large platforms, while providing t
 
 In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using email accounts provided by global companies, like Google and Microsoft, enabled users to avoid the effort associated with updating their contacts and potentially missing valuable communications.
 
-Due to the delegation of address management, our digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
+Due to the delegating the management of our emails to third party businesses, digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. It is now the root of our online identity and provides the authentication mechanism we use for logging into most websites. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
 
-Should we now want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable.
+Should we now want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable. Having out online identity under our sole control is of the utmost importance.
 
 \subsubsection{Spam}
 
@@ -85,7 +88,7 @@ The stated purpose of this is to provide highly-specific advertising. This may b
 
 \subsection{Philosophy}
 
-In order to provide an alternative to the existing system, Cashweb adhere's to the following principles:
+In order to provide an alternative to the existing system, Cashweb adheres to the following principles:
 
 \subsubsection{Simplicity}
 
@@ -99,11 +102,11 @@ Users must have control over access to their own identities, and the ability to 
 
 \subsubsection{Recoverability}
 
-In the case of a loss of identity, it must be possible to recover gracefully. In order to make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers.
+In the case of a loss of identity, it must be possible to recover gracefully. In order to make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers. Should a user lose their phone or computer, and another person obtains their private key, their identity must be able to be recovered.
 
 \subsubsection{Security \& Privacy}
 
-In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default.
+In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default using standard and well established standards such as the Advanced Encryption Standard (AES) and elliptic curve cryptography (ECC).
 
 In addition to the strong default security, users must be able to upgrade their security using existing overlay networks (e.g. Tor).
 
@@ -113,25 +116,37 @@ The protocol must be open-source and well-maintained reference implementations/d
 
 While the base protocol is open and publicly maintained, individual software implementations may be privately maintained.
 
+\subsubsection{Scalable Privacy}
+
+The protocol should be allow for users to determine their level of desired privacy. The base layer should provide protocol mechanisms for users to determine what they keep private, while providing defaults which are reasonable for most users.
+
+\subsubsection{Simplicity \& Extensibility}
+
+In order to allow for the ubiquitous use, the most basic feature set must be extremely simple. It should also be extensible enough to provide for businesses to provide more complicated functionality without disrupting existing user and software clients.
+
+\subsubsection{Integrability}
+
+The protocol should be built on standard web technologies which most users and software developers are already familiar with such as HTTP.
+
 \subsection{Central Concepts} % This should have better name?
 
 In order to meet the requirements described above, CashWeb protocol revolves around the following core concepts:
 
 \subsubsection{Web Standards}
 
-The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. ``Bearer''-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
+The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. ``Bearer''-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with cryptocurrency. Messages are sent and received using HTTP/2\cite{rfc7540} and WebSockets\cite{rfc6455} to enable the use of existing internet infrastructure and services.
 
 \subsubsection{Cryptocurrency}
 
 In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finney's original design was impractical due to the need for centralized management of the tokens. However, this idea can now be realized through the use of peer-to-peer digital cash systems like Bitcoin (BTC).
 
 Using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure, open, permissionless communication. The same keys may be used to send and receive funds can also be used to provide encryption for messages.
 
-Unfortunately, the Bitcoin network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email, ignoring spam. The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
+Unfortunately, the Bitcoin (BTC) network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email, ignoring spam. The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
-Thus, Bitcoin Cash was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The Bitcoin Cash roadmap stresses the importance of instant transactions accomplished on a global scale while building on the tokenized proof-of-work conceptualized by Satoshi Nakamoto.
+Thus, Bitcoin Cash (BCH) was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The Bitcoin Cash roadmap stresses the importance of instant transactions accomplished on a global scale while building on the tokenized proof-of-work conceptualized by Satoshi Nakamoto.
 
 \subsubsection{Identity}
 
@@ -141,7 +156,7 @@ Additionally, these pseudonyms can be made such that they can be proven to have 
 
 \subsubsection{Message Format}
 
-For all messages within the CashWeb system use the Protocol Buffer message format. ``Protobufs'' are now in wide use, easy to implement in a variety of languages, and serializable to binary.
+For all messages within the CashWeb system use the Protocol Buffer\cite{protobufs} message format. ``Protobufs'' are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
 \subsection{Infrastructure}
 
@@ -174,15 +189,15 @@ The distinction here between keyservers and relay servers is made due to seperat
   \item Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
 \end{itemize}
 
-Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. By using a standardized authentication and authorization mechanism, along with the global keyserver network, users can easily migrate between relay service providers should they choose.
+Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. This allows for paid, but pseudonymous registration to the service; protecting user privacy. By using a standardized authentication and authorization mechanism, along with the global keyserver network, users can easily migrate between relay service providers should they choose.
 
 \subsubsection{Messaging Client}
 
 An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
-The messaging clients are the most complex portion of the CashWeb system. The majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
+The messaging clients are the most complex portion of the CashWeb system. It must also handle management of digital funds used to generate stamps, and other micropayments. As such it must also take on the responsibility of being a cryptocurrency wallet. Additionally, the majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
 
-This allows the functionality to evolve gracefully over time without needing major changes to the underlying infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
+This allows the functionality to evolve gracefully over time without needing major changes to the underlying communications infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
 \subsubsection{Protocol Flow}
 
@@ -253,7 +268,7 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsection{Standardized Authorization \& Authentication}
 
-The Proof-Of-Payment (POP) protocol enables the standardized and seemless use of existing HTTP technology, but without the use of complicated billing infrastructure and account management. It allows the pseudonymously purchase of a JWT API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
+The Proof-Of-Payment (POP) protocol enables the standardized and seemless use of existing HTTP technology, but without the use of complicated billing infrastructure and account management. It allows the pseudonymously purchase of a JWT\cite{rfc7519} API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
 
 \subsection{Distributed Identity Management}
 
@@ -261,15 +276,17 @@ Having a standard keyserver infrastructure benefits a range of applications. Suc
 
 \subsection{Open Messaging}
 
-The combination of the POP protocol, keyservers, and relay servers, allows for advanced privacy features and SPAM-free communication. The ability to send structured messages with attached value, allows for all kinds of fee-based human-to-human, human-to-machine, machine-to-human, and machine-to-machine message processing. The most obvious application of this is peer to peer payments and messaging. However, the potential for other interesting services such as robots, which exchange value as well as information, can be imagined.
+The combination of the POP protocol, keyservers, and relay servers, allows for advanced privacy features and SPAM-free communication. The ability to send structured messages with attached value, allows for all kinds of fee-based human-to-human, human-to-machine, machine-to-human, and machine-to-machine message processing. The most obvious application of this is peer to peer payments and messaging. However, the potential for other interesting services such as online "bots", marketplaces, Web3.0 applications, and decentralized financial protocols.
 
 \section{Conclusion}
 
-The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging.
+The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging. It enables the seemless use of payments across all internet infrastructure without the introduction of permissioned financial intermediaries.
 
 Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued ``walled-garden'' communications networks.
 
-Digital currency combined with messaging, as originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is truly valuable.
+Digital currency combined with messaging, as originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights and economic freedom as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is objectively valuable.
+
+Because CashWeb operates on integrated micropayments, users are no longer a product.
 
 \bibliographystyle{unsrt}
 \bibliography{citations}
