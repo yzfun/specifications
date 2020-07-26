@@ -1,22 +1,14 @@
 \documentclass{article}
 
+\usepackage{auto-pst-pdf}
 \usepackage[superscript,biblabel]{cite}
-\usepackage{savesym}
 \usepackage{arxiv}
-\usepackage{amsthm}
-\usepackage{url}
 \usepackage{graphics}
+\usepackage{float}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
-\usepackage[T1]{fontenc}  % use 8-bit T1 fonts
 \usepackage{hyperref}    % hyperlinks
 \usepackage{url}      % simple URL typesetting
-\usepackage{booktabs}    % professional-quality tables
-\usepackage{amsfonts}    % blackboard math symbols
-\usepackage{nicefrac}    % compact symbols for 1/2, etc.
-\usepackage{microtype}   % microtypography
-\usepackage{lipsum}
-\usepackage{float}
 \usepackage{msc}
 
 \drawframe{no}
@@ -25,11 +17,7 @@
 \setlength{\envinstdist}{3cm}
 \setlength{\actionwidth}{3.5cm}
 
-\usepackage{draftwatermark}
-\SetWatermarkText{Draft}
-
 \title{CashWeb}
-
 \author{
  Shammah Chancellor \\
  \texttt{shammah.chancellor@cashweb.io} \\
@@ -187,64 +175,66 @@ This allows the functionality to evolve gracefully over time without needing maj
 \subsubsection{Protocol Flow}
 
 \begin{figure}[H]
-\centering
-\scalebox{.75}{
-    \begin{msc}[c]{Profile Retrieval}
-      \declinst{A}{}{ Client }
+  \begin{center}
+  \scalebox{.75}{
+      \begin{msc}[c]{Profile Retrieval}
+        \declinst{A}{}{ Client }
+        \declinst{B}{}{ Keyserver }
+        \declinst{C}{}{ Relay Server }
+        \regionstart{activation}{A}
+        \regionstart{activation}{B}
+        \mess{GET /keys/\{address\}}{A}{B}
+        \nextlevel[2]
+        \mess{Metadata}{B}{A}
+        \regionend{B}
+        \nextlevel[1]
+        \action{Extract Relay IP}{A}
+        \nextlevel[2]
+        \regionstart{activation}{C}
+        \mess{GET /profiles/\{address\}}{A}[0.75]{C}
+        \nextlevel[2]
+        \mess{Profile}{C}[0.75]{A}
+        \regionend{A}
+        \regionend{C}
+        \nextlevel[1]
+      \end{msc}
+      }
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \scalebox{.75}{
+      \begin{msc}[c]{Message Send}
+      \declinst{A}{ }{ Client }
       \declinst{B}{}{ Keyserver }
       \declinst{C}{}{ Relay Server }
+      \declinst{D}{}{ Bitcoin Node }
       \regionstart{activation}{A}
       \regionstart{activation}{B}
       \mess{GET /keys/\{address\}}{A}{B}
       \nextlevel[2]
-      \mess{Metadata}{B}{A}
+      \mess{AddressMetadata}{B}{A}
       \regionend{B}
       \nextlevel[1]
       \action{Extract Relay IP}{A}
       \nextlevel[2]
       \regionstart{activation}{C}
-      \mess{GET /profiles/\{address\}}{A}[0.75]{C}
+      \mess{PUT /messages/\{address\}}{A}[0.75]{C}
+      \nextlevel[1]
+      \regionstart{activation}{D}
+      \mess{Stamp Transactions}{C}{D}
       \nextlevel[2]
-      \mess{Profile}{C}[0.75]{A}
+      \mess{Accepted}{D}{C}
+      \regionend{D}
+      \nextlevel[1]
+      \mess{Ok}{C}[0.75]{A}
       \regionend{A}
       \regionend{C}
       \nextlevel[1]
-    \end{msc}
-    }
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\scalebox{.75}{
-    \begin{msc}[c]{Message Send}
-     \declinst{A}{ }{ Client }
-     \declinst{B}{}{ Keyserver }
-     \declinst{C}{}{ Relay Server }
-     \declinst{D}{}{ Bitcoin Node }
-     \regionstart{activation}{A}
-     \regionstart{activation}{B}
-     \mess{GET /keys/\{address\}}{A}{B}
-     \nextlevel[2]
-     \mess{AddressMetadata}{B}{A}
-     \regionend{B}
-     \nextlevel[1]
-     \action{Extract Relay IP}{A}
-     \nextlevel[2]
-     \regionstart{activation}{C}
-     \mess{PUT /messages/\{address\}}{A}[0.75]{C}
-     \nextlevel[1]
-     \regionstart{activation}{D}
-     \mess{Stamp Transactions}{C}{D}
-     \nextlevel[2]
-     \mess{Accepted}{D}{C}
-     \regionend{D}
-     \nextlevel[1]
-     \mess{Ok}{C}[0.75]{A}
-     \regionend{A}
-     \regionend{C}
-     \nextlevel[1]
-    \end{msc}
-}
+      \end{msc}
+  }
+  \end{center}
 \end{figure}
 
 \section{Applications}
