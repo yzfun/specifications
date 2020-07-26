@@ -119,13 +119,13 @@ In order to meet the requirements described above, CashWeb protocol revolves aro
 
 \subsubsection{Web Standards}
 
-The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. "Bearer"-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
+The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. ``Bearer''-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with Bitcoin tokens.
 
 \subsubsection{Cryptocurrency}
 
 In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through "reusable proof-of-work" (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
+Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finneys original design was impractical, but ultimately made possible through the use of Bitcoin Tokens.
 
 Using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure, open, permissionless communication. The same keys may be used to send and receive funds can also be used to provide encryption for messages.
 
@@ -141,7 +141,7 @@ Additionally, these pseudonyms can be made such that they can be proven to have 
 
 \subsubsection{Message Format}
 
-For all messages within the CashWeb system use the Protocol Buffer message format. "Protobufs" are now in wide use, easy to implement in a variety of languages, and serializable to binary.
+For all messages within the CashWeb system use the Protocol Buffer message format. ``Protobufs'' are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
 \subsection{Infrastructure}
 
@@ -151,7 +151,7 @@ The CashWeb protocol includes a network of keyservers which provide a public \& 
 
 This metadata is indexed by the hash of users public key and includes said public key, a body of information, and a signature covering the body providing integrity, authentication, and non-repudiation. Metadata updates are permissioned by providing valid signatures.
 
-Uploading data to the keyserver is protected by a "Proof-of-Payment protocol" (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
+Uploading data to the keyserver is protected by a ``Proof-of-Payment protocol'' (POP protocol). This provides a way to anchor on-chain value to specific updates and therefore allowing DoS resistant replication across the keyserver network.
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 \begin{itemize}
@@ -169,8 +169,10 @@ Another function of keyservers is to provide revocations of keys in the event th
 Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
 The distinction here between keyservers and relay servers is made due to seperation of concerns:
-* Keyservers provide global replication and therefore censorship-resistance for small amounts of unencrypted data.
-* Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
+\begin{itemize}
+  \item Keyservers provide global replication and therefore censorship-resistance for small amounts of unencrypted data.
+  \item Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
+\end{itemize}
 
 Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. By using a standardized authentication and authorization mechanism, along with the global keyserver network, users can easily migrate between relay service providers should they choose.
 
@@ -265,7 +267,7 @@ The combination of the POP protocol, keyservers, and relay servers, allows for a
 
 The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging.
 
-Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued "walled-garden" communications networks.
+Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued ``walled-garden'' communications networks.
 
 Digital currency combined with messaging, as originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is truly valuable.
 
