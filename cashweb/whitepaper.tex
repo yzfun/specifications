@@ -48,7 +48,7 @@ However, due to the inherent design limitations of these systems, it is signific
 
 As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% of all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services. Critical services which are not the source of revenue for these companies.
 
-The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the developemnt of Bitcoin\cite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seamless online experiences -- thus restoring user authority over their digital identities and privacy. 
+The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the development of Bitcoin\cite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seamless online experiences -- thus restoring user authority over their digital identities and privacy. 
 
 \subsection{Forces of Centralization}
 
@@ -64,7 +64,7 @@ Should we now want to migrate email providers for personal reasons, it has becom
 
 While email was envisioned as a person-to-person and machine-to-machine messaging system, the vast majority of emails are now machine-to-human. These messages largely consist of useless advertisements, but require processing power and human attention to evaluate and identify for deletion. Large-scale centralized email providers (e.g. Gmail\footnote{\url{https://mail.google.com}} and Hotmail\footnote{\url{https://outlook.live.com}}) benefit from their message volume by being able to identify similar messages sent to a large number of different customers and filter them out.
 
-Ironically companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by centralized platforms despite the original promise of these platforms to provide users with only high-value communications.
+Ironically, companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by centralized platforms despite the original promise of these platforms to provide users with only high-value communications.
 
 At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. In order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account.
 
@@ -76,13 +76,13 @@ While large services have provided us with much-needed convenience, centralized 
 
 \chapquote{\large ``If you are not paying for it; you're the product being sold.''}{Robert Danielson}
 
-Some providers still provide paid email access while essentially offering privacy as a product. However, these providers still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexes and categorized for advertising.
+Some providers still provide paid email access while essentially offering privacy as a product. However, these providers still have access to the same data about their users as free services. There becomes a financial incentive to sell this data while maintaining a guise of privacy. Regardless of the ethics of paid providers, emails exchanged with free email providers (e.g. Gmail) are still indexed and categorized for advertising.
 
 In non-email systems, our identity is increasingly tied to our email or phone numbers. This association means that there is a clear association between all other accounts and digital interactions. Being able to collate all this data about a user, and form a more complete profile, is extremely valuable to advertisers.
 
-Indeed, various companies (e.g. LiveRamp) purchase data across multiple services, and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history while also providing a way to associate email addresses and phone numbers should users log in to two different accounts during the same session.
+Indeed, various companies (e.g. LiveRamp) purchase data across multiple services and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history while also providing a way to associate email addresses and phone numbers should users log in to two different accounts during the same session.
 
-The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, the are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
+The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, there are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
 
 \section{The CashWeb Protocol}
 
@@ -118,7 +118,7 @@ While the base protocol is open and publicly maintained, individual software imp
 
 \subsubsection{Scalable Privacy}
 
-The protocol should be allow for users to determine their level of desired privacy. The base layer should provide protocol mechanisms for users to determine what they keep private, while providing defaults which are reasonable for most users.
+The protocol should allow for users to determine their level of desired privacy. The base layer should provide protocol mechanisms for users to determine what they keep private, while providing defaults which are reasonable for most users.
 
 \subsubsection{Simplicity \& Extensibility}
 
@@ -140,11 +140,11 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
 
-Traditional systems require trusted third parties and complex integration's with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finney's original design was impractical due to the need for centralized management of the RPoW tokens. However, this idea can now be realized through the use of peer-to-peer digital cash systems like Bitcoin (BTC).
+Traditional systems require trusted third parties and complex integrations with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finney's original design was impractical due to the need for centralized management of the RPoW tokens. However, this idea can now be realized through the use of peer-to-peer digital cash systems like Bitcoin (BTC).
 
-Using a cryptocurrency, instead of traditional banking integrations, synergizes well with the secure, open, permissionless communication. The same keys may be used to send and receive funds can also be used to provide encryption for messages.
+Using a cryptocurrency, instead of traditional banking integrations, synergizes well with secure, open, permissionless communication. The same keys may be used to send and receive funds that are used to provide encryption for messages.
 
-Unfortunately, the Bitcoin (BTC) network does not support the transaction volume which would be associated with a widely used messaging system. Most other cryptocurrency systems also do not intend to support volumes on the order of email, ignoring spam. The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
+Unfortunately, the Bitcoin (BTC) network does not support the transaction volume which would be necessary for a widely used messaging platform. Most other cryptocurrency systems also do not intend to support volumes on the order of email, ignoring spam. The ones that do support these volumes have centrally managed economic policies. Such management would give them authority over the ability to send and receive messages.
 
 Thus, Bitcoin Cash (BCH) was selected due to its roadmap being highly compatible with the requirements of the CashWeb project. The Bitcoin Cash roadmap stresses the importance of instant transactions accomplished on a global scale while building on the tokenized proof-of-work conceptualized by Satoshi Nakamoto.
 
@@ -171,19 +171,19 @@ Uploading data to the keyserver is protected by a ``Proof-of-Payment protocol'' 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 \begin{itemize}
   \item Anti-DDoS mechanisms are considered from inception and hence we can arrive at a more simple and robust overall design.
-  \item HTTP2 makes it significantly simpler to interact with, for example, it is immediately compatible with off-the-shelf load balancers.
+  \item HTTP2 makes it significantly simpler to interact with. It is immediately compatible with off-the-shelf load balancers.
   \item The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
 \end{itemize}
 
-The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that users messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
+The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that user's messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
 
 Another function of keyservers is to provide revocations of keys in the event that a user loses their on-line private key. The keyservers enable the publication of new keys to existing contacts in a trustless manner. This allows for key-rotation on Bitcoin, which has been a significant deficiency in all cryptocurrencies since the Bitcoin whitepaper was written.
 
 \subsubsection{Relay Servers}
 
-Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While this server currently only provide messaging, profile names, and icons, they can easily be extended to provide status messages, microblogs, and other potentially useful functions.
+Relay servers provide the combined purpose of both POP and SMTP servers. They accept messages on behalf of the clients, and verify basic integrity of these messages. They also host profile information including avatars and other information. While the relay servers currently only provides messaging, profile names, and icons, the software can easily be extended to provide status messages, microblogs, and other potentially useful functions.
 
-The distinction here between keyservers and relay servers is made due to seperation of concerns:
+The distinction here between keyservers and relay servers is made due to separation of concerns:
 \begin{itemize}
   \item Keyservers provide global replication and therefore censorship-resistance for small amounts of unencrypted data.
   \item Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
@@ -195,7 +195,7 @@ Uploading to, and pulling messages from, the relay server should be protected by
 
 An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
-The messaging clients are the most complex portion of the CashWeb system. It must also handle management of digital funds used to generate stamps and other micropayments. As such it must also take on the responsibility of being a cryptocurrency wallet. Additionally, the majority of the protocol is handled via encrypted structured payloads that wallets needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
+The messaging clients are the most complex portion of the CashWeb system. It must also handle management of digital funds used to generate stamps and other micropayments. As such it must also take on the responsibility of being a cryptocurrency wallet. Additionally, the majority of the protocol is handled via encrypted structured payloads that the messaging client needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
 
 This allows the functionality to evolve gracefully over time without needing major changes to the underlying communications infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
