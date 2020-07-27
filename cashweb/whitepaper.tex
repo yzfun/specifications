@@ -56,7 +56,7 @@ The centralization of the internet into a few large platforms, while providing t
 
 In the past, internet service providers (ISPs) offered email services to their customers. This meant that when a user moved residences or wanted to switch service providers, their email address would change (e.g. john.doe@sonic.net). Using email accounts provided by global companies, like Google and Microsoft, enabled users to avoid the effort associated with updating their contacts and potentially missing valuable communications.
 
-Due to delegating the management of email accounts to third party businesses, digital identities have become more stable. As a result, businesses and users have begun to rely on them for more and more important communication and as a digital identity. It is now the root of our online identity and provides the authentication mechanism we use for logging into most websites. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
+Due to delegating the management of email accounts to third party businesses, digital identities have become less transitive. As a result, businesses and users have begun to rely on them for important communication and as a digital identity. It is now the root of our online identity and provides the authentication mechanism we use for logging into most websites. Today, loss of access to our email has become a life-altering event with significant consequences. Maintaining access to our email may be out of our control, as a loss may result due to a compromised password or a judgement by the provider. 
 
 Should we now want to migrate email providers for personal reasons, it has become an insurmountable task. Users may find themselves effectively powerless to hold their service providers accountable. Having our online identity under our sole control is of the utmost importance.
 
@@ -66,9 +66,7 @@ While email was envisioned as a person-to-person and machine-to-machine messagin
 
 Ironically, companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by centralized platforms despite the original promise of these platforms to provide users with only high-value communications.
 
-At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. In order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account.
-
-If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The identifying phone number or email address is permanently banned.
+At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. In order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account. If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The identifying phone number or email address is permanently banned. However, this means spam prevention is inexorably tied to our real-world identities on these systems.
 
 \subsubsection{Consequences}
 
@@ -82,7 +80,7 @@ In non-email systems, our identity is increasingly tied to our email or phone nu
 
 Indeed, various companies (e.g. LiveRamp) purchase data across multiple services and collate it based on emails and phone numbers. Device fingerprinting is also employed to combine this data with ones web browsing history while also providing a way to associate email addresses and phone numbers should users log in to two different accounts during the same session.
 
-The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, there are many other purposes this data is used for which are of concern. These other uses are outside the scope of this paper.
+The stated purpose of this is to provide highly-specific advertising. This may be desirable to users in finding products they want. However, there are many other purposes this data is used for which are of concern -- such as tracking the online activity of political dissidents. These other uses are outside the scope of this paper.
 
 \section{The CashWeb Protocol}
 
@@ -122,7 +120,7 @@ The protocol should allow for users to determine their level of desired privacy.
 
 \subsubsection{Simplicity \& Extensibility}
 
-In order to allow for the ubiquitous use, the most basic feature set must be extremely simple. It should also be extensible enough to provide for businesses to provide more complicated functionality without disrupting existing user and software clients.
+In order to allow for the ubiquitous use, the most basic feature set must be extremely simple. It should also be extensible enough to allow for businesses to provide more complicated functionality without disrupting existing user and software clients.
 
 \subsubsection{Integrability}
 
@@ -170,12 +168,12 @@ Uploading data to the keyserver is protected by a ``Proof-of-Payment protocol'' 
 
 The specialised CashWeb keyserver has the following benefits over existing GPG infrastructure:
 \begin{itemize}
-  \item Anti-DDoS mechanisms are considered from inception and hence we can arrive at a more simple and robust overall design.
+  \item Anti-DDoS mechanisms are considered from inception, and hence we can arrive at a more simple and robust overall design.
   \item HTTP2 makes it significantly simpler to interact with. It is immediately compatible with off-the-shelf load balancers.
   \item The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
 \end{itemize}
 
-The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing that user's messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
+The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing user's messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
 
 Another function of keyservers is to provide revocations of keys in the event that a user loses their on-line private key. The keyservers enable the publication of new keys to existing contacts in a trustless manner. This allows for key-rotation on Bitcoin, which has been a significant deficiency in all cryptocurrencies since the Bitcoin whitepaper was written.
 
@@ -193,11 +191,11 @@ Uploading to, and pulling messages from, the relay server should be protected by
 
 \subsubsection{Messaging Client}
 
-An end-user client is necessary for interacting with this system in a easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
+An end-user client is necessary for interacting with this system in an easy-to-use way. The client serves to manage funds associated with sending and receiving messages, update keyservers as to which relay server the user accepts messages, and connect to and process messages received from the relay servers.
 
 The messaging clients are the most complex portion of the CashWeb system. It must also handle management of digital funds used to generate stamps and other micropayments. As such it must also take on the responsibility of being a cryptocurrency wallet. Additionally, the majority of the protocol is handled via encrypted structured payloads that the messaging client needs to parse and process. Both the keyserver and the relay server are for the most part agnostic to the protocols that wallets may use to talk to each other.
 
-This allows the functionality to evolve gracefully over time without needing major changes to the underlying communications infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they don't understand, while enabling protocol changes without needing wide-scale consensus on additions.
+This allows the functionality to evolve gracefully over time without needing major changes to the underlying communications infrastructure. Wallet developers may add and evolve functionality over time. Wallets need only ignore payload types they do not understand, while enabling protocol changes without needing wide-scale consensus on additions.
 
 \subsubsection{Protocol Flow}
 
@@ -268,11 +266,11 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsection{Standardized Authorization \& Authentication}
 
-The Proof-Of-Payment (POP) protocol enables the standardized and seamless use of existing HTTP technology, but without the use of complicated billing infrastructure and account management. It allows the pseudonymous purchase of a JWT\cite{rfc7519} API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
+The Proof-Of-Payment (POP) protocol enables the standardized and seamless use of existing HTTP technology but without the use of complicated billing infrastructure and account management. It allows the pseudonymous purchase of a JWT\cite{rfc7519} API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
 
 \subsection{Distributed Identity Management}
 
-Having a standard keyserver infrastructure benefits a range of applications. Such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation and rotation events. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral identity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
+Having a standard keyserver infrastructure benefits a range of applications -- such as cryptographically secure, but updatable, contact exchange via QR codes or other mediums. The ability to rotate this information allows for important key revocation and rotation events. It provides a comprehensive mechanism for managing online identities in a decentralized and trustless manner. Having neutral identity infrastructure provides a strong incentive for participation from all online users; unlike centralized identity providers (e.g. Google, Facebook, etc.)
 
 \subsection{Open Messaging}
 
@@ -280,7 +278,7 @@ The combination of the POP protocol, keyservers, and relay servers, allows for a
 
 \section{Conclusion}
 
-The CashWeb protocol's aim to provide censorship-resistant solutions to common technological problems which continually are reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging. It enables the seamless use of payments across all internet infrastructure without the introduction of permissioned financial intermediaries.
+The CashWeb protocol's aim is to provide censorship-resistant solutions to common technological problems which are continually reinvented in proprietary ways. CashWeb, like the underlying cryptocurrency technology, allows for the disintermediation of authentication, identity management, and messaging. It enables the seamless use of payments across all internet infrastructure without the introduction of permissioned financial intermediaries.
 
 Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued ``walled-garden'' communications networks.
 
