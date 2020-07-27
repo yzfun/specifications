@@ -12,11 +12,12 @@
 
 \usepackage[
 backend=biber,
-style=alphabetic
+style=numeric
 ]{biblatex}
 \addbibresource{citations.bib}
 
 \newcommand{\chapquote}[2]{\begin{quotation} \textit{#1} \end{quotation} \begin{flushright} - #2\end{flushright} }
+\renewcommand{\thefootnote}{\textit{\alph{footnote}}}
 
 \drawframe{no}
 \setlength{\instdist}{5cm}
@@ -41,20 +42,20 @@ style=alphabetic
 \maketitle
 
 \begin{abstract}
-CashWeb is a suite of protocols providing an open messaging standard with a reference implementation called ``Stamp''. It uses a federated network topology, similar to XMPP and SMTP, to provide the necessary scaling characteristics to replace those technologies. There is an estimated 300 billion emails sent each day as of 2020\cite{emailssent2020}. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
+CashWeb is a suite of protocols providing an open messaging standard with a reference implementation called ``Stamp''. It uses a federated network topology, similar to XMPP and SMTP, to provide the necessary scaling characteristics to replace those technologies. There is an estimated 300 billion emails sent each day as of 2020\supercite{emailssent2020}. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
 \end{abstract}
 
 \section{Introduction}
 
 \subsection{History}
 
-Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas, and receiving feedback. Systems like Usenet\cite{rfc5536}\cite{rfc5537}, Email\cite{rfc5322}\cite{rfc1939}\cite{rfc5321}\cite{rfc4551}, and XMPP\cite{rfc3920}\cite{rfc3921}\cite{rfc3922}\cite{rfc3923} were built as decentralized platforms for this purpose.
+Early adopters of the internet saw it as a platform for inexpensive and fast sharing of new ideas, and receiving feedback. Systems like Usenet\supercite{rfc5536}\supercite{rfc5537}, Email\supercite{rfc5322}\supercite{rfc1939}\supercite{rfc5321}\supercite{rfc4551}, and XMPP\supercite{rfc3920}\supercite{rfc3921}\supercite{rfc3922}\supercite{rfc3923} were built as decentralized platforms for this purpose.
 
 However, due to the inherent design limitations of these systems, it is significantly more costly to receive messages than to send them. The expense of message processing is placed on the recipient with respect to processing power, long-term storage, and mental attention. This incentivizes sending large volumes of low-value messages. This cost has lead to a reliance on centralized systems to identify and filter messages while users delegated authority over their online identities and communications to third parties in exchange for convenience. As a result, a loss of user privacy and control over online identities occured.
 
-As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\cite{gmail2018} and Cloudflare routed 10\% of all internet traffic\cite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\cite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services. Critical services which are not the source of revenue for these companies.
+As of June 2017, Facebook reported 2 billion users. By October 2018, Gmail reported 1.5 billion active users\supercite{gmail2018} and Cloudflare routed 10\% of all internet traffic\supercite{cloudflare2018}. By June 2020, Google, Apple, and Microsoft held a total of 85\% of total market share of email clients\supercite{emailshare2020}. We now rely on very few companies to reliably and honestly manage critical internet services. Critical services which are not the source of revenue for these companies.
 
-The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the development of Bitcoin\cite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seamless online experiences -- thus restoring user authority over their digital identities and privacy. 
+The centralization of the internet into a few large platforms, while providing the benefit of a seamless experience across the web, resulted from the inability to construct decentralized alternatives with similar convenience. However, since the development of Bitcoin\supercite{nakamoto2008bpp}, it is possible to construct decentralized systems which do provide the conveniences users expect out of today's internet. The CashWeb protocols are centered around leveraging cryptocurrency to provide seamless online experiences -- thus restoring user authority over their digital identities and privacy. 
 
 \subsection{Forces of Centralization}
 
@@ -138,7 +139,7 @@ In order to meet the requirements described above, CashWeb protocol revolves aro
 
 \subsubsection{Web Standards}
 
-The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. ``Bearer''-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with cryptocurrency. Messages are sent and received using HTTP/2\cite{rfc7540} and WebSockets\cite{rfc6455} to enable the use of existing internet infrastructure and services.
+The CashWeb system adheres to the established web standards to allow quick and easy integration into existing protocols and infrastructure. ``Bearer''-style tokens are used extensively in combination with existing cryptocurrency payment standards to allow authenticated access to resources to be purchased with cryptocurrency. Messages are sent and received using HTTP/2\supercite{rfc7540} and WebSockets\supercite{rfc6455} to enable the use of existing internet infrastructure and services.
 
 \subsubsection{Cryptocurrency}
 
@@ -160,7 +161,7 @@ Additionally, these pseudonyms can be made such that they can be proven to have 
 
 \subsubsection{Message Format}
 
-All messages within the CashWeb system use the Protocol Buffer\cite{protobufs} message format. ``Protobufs'' are now in wide use, easy to implement in a variety of languages, and serializable to binary.
+All messages within the CashWeb system use the Protocol Buffer\supercite{protobufs} message format. ``Protobufs'' are now in wide use, easy to implement in a variety of languages, and serializable to binary.
 
 \subsection{Infrastructure}
 
@@ -272,7 +273,7 @@ This allows the functionality to evolve gracefully over time without needing maj
 
 \subsection{Standardized Authorization \& Authentication}
 
-The Proof-Of-Payment (POP) protocol enables the standardized and seamless use of existing HTTP technology but without the use of complicated billing infrastructure and account management. It allows the pseudonymous purchase of a JWT\cite{rfc7519} API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
+The Proof-Of-Payment (POP) protocol enables the standardized and seamless use of existing HTTP technology but without the use of complicated billing infrastructure and account management. It allows the pseudonymous purchase of a JWT\supercite{rfc7519} API token, without requiring an account management system, billing frontends, or other complicated infrastructure.
 
 \subsection{Distributed Identity Management}
 
@@ -288,7 +289,7 @@ The CashWeb protocol's aim is to provide censorship-resistant solutions to commo
 
 Attaching payments to peer-to-peer communications enables the disruption of existing internet power structures. Centralized moderation is obviated, and thus CashWeb provides digital ``neutral ground'' for the collaboration of all willing parties. It removes the incentive for continued ``walled-garden'' communications networks.
 
-Digital currency combined with messaging, as originally imagined by Hal Finney\cite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights and economic freedom as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is objectively valuable.
+Digital currency combined with messaging, as originally imagined by Hal Finney\supercite{finney2004rpow}, provides equal footing for all participants in the global dialog. This is a critical step, and critical infrastructure, in maintaining human rights and economic freedom as technology continues to evolve. It also has the potential to change the way humans communicate and think by enabling us to focus our attention on information which is objectively valuable.
 
 Because CashWeb operates on integrated micropayments, users are no longer a product.
 
