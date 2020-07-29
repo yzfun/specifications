@@ -42,7 +42,7 @@ style=numeric
 \maketitle
 
 \begin{abstract}
-CashWeb is a suite of protocols providing an open messaging standard with a reference implementation called ``Stamp''. It uses a federated network topology, similar to XMPP and SMTP, to provide the necessary scaling characteristics to replace those technologies. There is an estimated 300 billion emails sent each day as of 2020\supercite{emailssent2020}. It is unique in that it provides end-to-end encryption and abuse mitigation without the need for central moderation.
+We present a suite of protocols providing an open messaging standard with abuse mitigation without the need for a content moderator. Content moderation is obviated by cryptographically attaching small amounts of cryptocurrency to each message. All messages are encrypted to protect user privacy. It uses a federated network topology, similar to XMPP and SMTP, to provide the scalability necessary to be a suitable replacement for existing messaging infrastructure. 
 \end{abstract}
 
 \section{Introduction}
@@ -73,7 +73,7 @@ While email was envisioned as a person-to-person and machine-to-machine messagin
 
 Ironically, companies we actively do business with are sending more ``opt-in'' marketing messages. These are largely served unfiltered by centralized platforms despite the original promise of these platforms to provide users with only high-value communications.
 
-At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. In order to dissuade spam on these platforms, they require providing a telephone number, or email, or both, in order to have an account. If an account starts producing too much unwanted content on these systems, the account is restricted or deleted. The identifying phone number or email address is permanently banned. However, this means spam prevention is inexorably tied to our real-world identities on these systems.
+At the same time, much of our high-value communications with personal acquaintances have moved to digital platforms like SMS, Telegram, Messenger, WhatsApp, Twitter, and Signal. To dissuade spam on these platforms, they require providing a telephone number, or email, or both, to obtain an account. If an account starts producing too much unwanted content on these systems then the account is restricted or deleted and the identifying phone number, or email address, is permanently banned. However, this means spam prevention is inexorably tied to our real-world identities on these systems.
 
 \subsubsection{Consequences}
 
@@ -93,11 +93,11 @@ The stated purpose of this is to provide highly-specific advertising. This may b
 
 \subsection{Philosophy}
 
-In order to provide an alternative to the existing system, Cashweb adheres to the following principles:
+To provide an alternative to the existing system, CashWeb adheres to the following principles:
 
 \subsubsection{Simplicity}
 
-In order to attract a wide-range of users, CashWeb must be a solution which requires minimal technical expertise. It must be possible to use third parties to provide hosting and operation of services for those uninterested in provisioning their own hardware.
+CashWeb must be a solution which requires minimal technical expertise to attract a wide-range of users. It must be possible to use third parties to provide hosting and operation of services for those uninterested in provisioning their own hardware.
 
 Similarly, the base protocol must be as simple as possible to attract a wide-range of developers.
 
@@ -107,11 +107,11 @@ Users must have control over access to their own identities, and the ability to 
 
 \subsubsection{Recoverability}
 
-In the case of a loss of identity, it must be possible to recover gracefully. In order to make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers. Should a user lose their phone or computer, and another person obtains their private key, their identity must be able to be recovered.
+It must be possible to recover gracefully in the case of a loss of identity. To make authentication transferable from one service provider to another, asymmetric cryptography must be employed so that identification is not a responsibility of CashWeb service providers. Should a user lose their phone or computer, and another person obtains their private key, their identity must be able to be recovered.
 
 \subsubsection{Security \& Privacy}
 
-In order to protect the privacy of users, the contents of messages must not be readable by third parties including CashWeb service providers. All communications between two parties should be encrypted by default using well established standards such as the Advanced Encryption Standard (AES) and elliptic curve cryptography (ECC).
+The contents of messages must not be readable by third parties including CashWeb service providers to protect the privacy of users. All communications between two parties should be encrypted by default using well established standards such as the Advanced Encryption Standard (AES) and elliptic curve cryptography (ECC).
 
 In addition to the strong default security, users must be able to upgrade their security using existing overlay networks (e.g. Tor).
 
@@ -127,7 +127,7 @@ The protocol should allow for users to determine their level of desired privacy.
 
 \subsubsection{Simplicity \& Extensibility}
 
-In order to allow for the ubiquitous use, the most basic feature set must be extremely simple. It should also be extensible enough to allow for businesses to provide more complicated functionality without disrupting existing user and software clients.
+The most basic feature set must be extremely simple to allow for ubiquitous use. It should also be extensible enough to allow for businesses to provide more complicated functionality without disrupting existing user and software clients.
 
 \subsubsection{Integrability}
 
@@ -135,7 +135,7 @@ The protocol should be built on standard web technologies which most users and s
 
 \subsection{Central Concepts} % This should have better name?
 
-In order to meet the requirements described above, CashWeb protocol revolves around the following core concepts:
+To meet the requirements described above, CashWeb protocol revolves around the following core concepts:
 
 \subsubsection{Web Standards}
 
@@ -143,7 +143,7 @@ The CashWeb system adheres to the established web standards to allow quick and e
 
 \subsubsection{Cryptocurrency}
 
-In order to maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. In order to support this requirement, payments need to be at the center of the design.
+To maintain secure communication and the permissionless nature of the CashWeb system, it must be impractical for a single party to send large volumes of unsolicited messages. All messages sent should impose a cost on the sender that is paid to the recipient. Supporting this requirement requires that payments be at the center of the design.
 
 Traditional systems require trusted third parties and complex integrations with the traditional banking system. Visionaries, like Hal Finney, conceived of this problem being solved through ``reusable proof-of-work'' (RPoW). Unfortunately, Finney's original design was impractical due to the need for centralized management of the RPoW tokens. However, this idea can now be realized through the use of peer-to-peer digital cash systems like Bitcoin (BTC).
 
@@ -180,7 +180,7 @@ The specialised CashWeb keyserver has the following benefits over existing GPG i
   \item The payload format is more concise than what existing keyservers provide. However, X.509 certificates can also be provided inside an entry associated with a given address.
 \end{itemize}
 
-The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing user's messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server in order to bootstrap communication. 
+The CashWeb keyserver can be used for a wide-range of applications (which are eluded to below), however our primary use-case is to record a pointer to the specific relay server managing user's messages. In this way any user with access to the keyserver network and a hosted address, may lookup the address on the keyserver network and then redirect to their specific relay server to bootstrap communication. 
 
 Another function of keyservers is to provide revocations of keys in the event that a user loses their on-line private key. The keyservers enable the publication of new keys to existing contacts in a trustless manner. This allows for key-rotation on Bitcoin, which has been a significant deficiency in all cryptocurrencies since the Bitcoin whitepaper was written.
 
@@ -194,7 +194,7 @@ The distinction here between keyservers and relay servers is made due to separat
   \item Relay servers serve only specific users and therefore can cheaply host large amounts of encrypted personal data.
 \end{itemize}
 
-Uploading to, and pulling messages from, the relay server should be protected by the Proof-of-Payment protocol. This allows for paid, but pseudonymous registration to the service; protecting user privacy. Users can easily migrate between relay service providers should they choose due to using a standardized authentication and authorization mechanism, along with the global keyserver network.
+Opening an account on a relay server is done through a standard HTTP remote procedure call. The authorization and authentication mechanism is based around the POP protocol. This allows for pseudonymous account creation while ensuring that relay servers generate revenue. Users can easily migrate between relay service providers due to standardized account registration APIs.
 
 \subsubsection{Messaging Client}
 
